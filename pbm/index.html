@@ -1,0 +1,978 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Decisão Transfusional – Hemácias | Apoio PBM</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:Arial,Helvetica,sans-serif;background:#f4f7fa;color:#1c2733;line-height:1.55}
+  header{background:#1e3a5f;color:#fff;padding:22px 20px;text-align:center}
+  header h1{font-size:1.35rem;margin-bottom:4px}
+  header p{font-size:.9rem;opacity:.9}
+  .tabs{display:flex;background:#fff;border-bottom:2px solid #d9e2ec}
+  .tab{flex:1;padding:14px;text-align:center;cursor:pointer;font-weight:bold;color:#5a6b7a;border-bottom:3px solid transparent;font-size:.95rem;user-select:none}
+  .panel{display:none}
+  #tab-guia:checked ~ main #guia{display:block}
+  #tab-decisao:checked ~ main #decisao{display:block}
+  #tab-guia:checked ~ .tabs label[for="tab-guia"],
+  #tab-decisao:checked ~ .tabs label[for="tab-decisao"]{color:#1e3a5f;border-bottom-color:#1e3a5f}
+  main{max-width:860px;margin:0 auto;padding:20px 16px 60px}
+  h3{color:#2d5a8e;font-size:1rem;margin:14px 0 8px}
+  p{margin-bottom:10px}
+  .card{background:#fff;border:1px solid #d9e2ec;border-radius:10px;padding:16px;margin-bottom:14px}
+  .card h3{margin-top:0}
+  ul{padding-left:20px;margin-bottom:10px}
+  li{margin-bottom:6px}
+  .pill{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.78rem;font-weight:bold;margin:2px 4px 2px 0}
+  .pill.verde{background:#e8f5ee;color:#1e7d4f}
+  .pill.amarelo{background:#fdf6e3;color:#b8860b}
+  .pill.vermelho{background:#fdecea;color:#b3261e}
+  .pill.azul{background:#e8f0fa;color:#2d5a8e}
+  .grid{display:flex;flex-wrap:wrap;gap:14px}
+  .grid > div{flex:1 1 300px}
+  label{display:block;font-weight:bold;font-size:.85rem;margin:12px 0 4px;color:#1e3a5f}
+  input,select{width:100%;padding:10px;border:1px solid #d9e2ec;border-radius:8px;font-size:.95rem;background:#fff}
+  .radio-group{display:flex;flex-wrap:wrap;gap:8px;margin-top:4px}
+  .radio-group label{display:flex;align-items:center;gap:6px;font-weight:normal;font-size:.88rem;margin:0;padding:8px 12px;border:1px solid #d9e2ec;border-radius:8px;cursor:pointer;background:#fff}
+  .radio-group label.sel{border-color:#2d5a8e;background:#e8f0fa;font-weight:bold}
+  .radio-group input{width:auto}
+  .btn{display:block;width:100%;padding:14px;border:none;border-radius:8px;font-size:1rem;font-weight:bold;cursor:pointer;margin-top:18px}
+  .btn.primario{background:#2d5a8e;color:#fff}
+  .btn.secundario{background:#eef2f6;color:#1e3a5f;border:1px solid #d9e2ec;margin-top:10px}
+  .resultado{margin-top:20px}
+  .aviso-dados{background:#fdf6e3;border:1px solid #b8860b;border-radius:8px;padding:12px;margin-bottom:12px;font-size:.88rem}
+  .aviso-dados strong{color:#b8860b}
+  .sugestao-prompt{background:#e8f0fa;border-left:5px solid #2d5a8e;border-radius:8px;padding:12px;margin-bottom:14px;font-size:.88rem}
+  .sugestao-prompt strong{color:#2d5a8e}
+  .alerta-falciforme{background:#fdecea;border:2px solid #b3261e;border-radius:10px;padding:14px;margin-bottom:14px;font-size:.9rem}
+  .alerta-falciforme strong{color:#b3261e}
+  .alerta-obrigatorio{background:#fdecea;border:3px solid #b3261e;border-radius:10px;padding:16px;margin-bottom:16px;font-size:.95rem}
+  .alerta-obrigatorio h4{color:#b3261e;font-size:1.05rem;margin-bottom:8px}
+  .alerta-obrigatorio strong{color:#b3261e}
+  .pbm-hero{background:#e8f5ee;border:2px solid #1e7d4f;border-radius:12px;padding:16px;margin-bottom:14px}
+  .pbm-hero h4{color:#1e7d4f;font-size:1.1rem;margin-bottom:8px}
+  .pbm-hero p{font-size:.92rem}
+  .pbm-alerta{background:#fdf6e3;border-left:5px solid #b8860b;border-radius:8px;padding:10px 12px;margin-top:10px}
+  .pbm-alerta strong{color:#8a6d1a}
+  .faixa-warn{background:#fdf6e3;border:2px solid #b8860b;border-radius:10px;padding:14px;margin-bottom:14px;font-size:.9rem}
+  .faixa-warn strong{color:#8a6d1a}
+  .taco-warn{background:#fdecea;border:2px solid #b3261e;border-radius:10px;padding:14px;margin-bottom:14px;font-size:.9rem}
+  .taco-warn strong{color:#b3261e}
+  .veredito{border-radius:12px;padding:18px;margin-bottom:14px;border:2px solid}
+  .veredito.nao{background:#e8f5ee;border-color:#1e7d4f}
+  .veredito.aprofundar{background:#fdf6e3;border-color:#b8860b}
+  .veredito.transfundir{background:#fff;border-color:#2d5a8e}
+  .veredito h3{font-size:1.25rem;margin-bottom:6px}
+  .veredito .motivo{font-weight:bold;margin-bottom:4px}
+  .veredito .detalhe{font-size:.88rem;opacity:.85}
+  .veredito .opcao{font-size:.85rem;font-style:italic;color:#5a6b7a;margin-top:8px}
+  .veredito.secundario{padding:12px 14px;border-width:1px;background:#f7fafc}
+  .veredito.secundario h3{font-size:1rem;margin-bottom:4px}
+  .veredito.secundario .motivo{font-size:.92rem}
+  .veredito.secundario .detalhe{font-size:.82rem}
+  .veredito.secundario .opcao{font-size:.8rem}
+  .alerta{background:#fdecea;border-left:5px solid #b3261e;border-radius:8px;padding:14px;margin-bottom:14px}
+  .alerta strong{color:#b3261e}
+  .bloco{background:#fff;border:1px solid #d9e2ec;border-radius:10px;padding:16px;margin-bottom:14px}
+  .bloco h4{color:#1e3a5f;margin-bottom:8px;font-size:.95rem}
+  .bloco .linha{display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px dashed #d9e2ec;font-size:.9rem}
+  .bloco .linha:last-child{border-bottom:none}
+  .bloco .rotulo{color:#5a6b7a}
+  .bloco .valor{font-weight:bold;text-align:right;max-width:60%}
+  .pros-contras{display:flex;gap:12px;flex-wrap:wrap}
+  .pros,.contras{flex:1 1 250px;border-radius:8px;padding:12px}
+  .pros{background:#e8f5ee}
+  .contras{background:#fdecea}
+  .pros h5,.contras h5{margin-bottom:6px}
+  .nota{font-size:.8rem;color:#5a6b7a;margin-top:8px}
+  .disclaimer{background:#eef2f6;border-radius:8px;padding:12px;font-size:.8rem;color:#5a6b7a;margin-top:20px}
+
+  /* BALANÇA */
+  .balanca{background:#fff;border:1px solid #d9e2ec;border-radius:12px;padding:14px 14px 12px;margin-bottom:14px;text-align:center}
+  .balanca-titulo{font-size:.95rem;font-weight:bold;color:#1e3a5f;margin-bottom:2px}
+  .balanca-sub{font-size:.76rem;color:#5a6b7a;margin-bottom:12px}
+  .balanca-corpo{position:relative;max-width:620px;margin:0 auto;min-height:270px}
+  .haste{position:relative;height:8px;background:#1e3a5f;border-radius:4px;margin:0 26px;transform-origin:50% 50%;transition:transform .5s ease;z-index:2}
+  .fulcro{position:absolute;left:50%;top:8px;transform:translateX(-50%);width:0;height:0;border-left:14px solid transparent;border-right:14px solid transparent;border-top:20px solid #1e3a5f;z-index:1}
+  .fulcro-base{position:absolute;left:50%;top:28px;transform:translateX(-50%);width:64px;height:9px;background:#1e3a5f;border-radius:3px;z-index:1}
+  .balanca.pende-pbm .haste{transform:rotate(-6deg)}
+  .balanca.pende-pbm-forte .haste{transform:rotate(-9deg)}
+  .balanca.pende-transfusao .haste{transform:rotate(6deg)}
+  .balanca.pende-transfusao-forte .haste{transform:rotate(9deg)}
+  .prato{position:absolute;top:52px;width:44%;background:#fff;border:1px solid #d9e2ec;border-radius:10px;padding:6px 9px;text-align:left;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+  .prato-pbm{left:0;border-color:#1e7d4f}
+  .prato-tx{right:0;border-color:#b8860b}
+  .prato-rotulo{font-weight:bold;font-size:.78rem;text-align:center;margin-bottom:3px}
+  .prato-pbm .prato-rotulo{color:#1e7d4f}
+  .prato-tx .prato-rotulo{color:#8a6d1a}
+  .prato ul{list-style:none;padding:0;margin:0 0 5px;font-size:.68rem}
+  .prato li{padding:1px 0;border-bottom:1px dashed rgba(0,0,0,.07)}
+  .peso-bar{height:7px;background:#e5e7eb;border-radius:5px;overflow:hidden;margin-top:2px}
+  .peso-fill{height:100%;border-radius:5px}
+  .prato-pbm .peso-fill{background:#1e7d4f}
+  .prato-tx .peso-fill{background:#b8860b}
+  .prato-peso{font-size:.64rem;color:#5a6b7a;text-align:center;margin-top:2px;font-weight:bold}
+  .prato-msg{font-size:.64rem;color:#5a6b7a;text-align:center;font-style:italic;margin-top:1px}
+  .balanca-msg{margin-top:16px;position:relative;z-index:3;background:#eef2f6;border-radius:8px;padding:8px 10px;font-size:.8rem;color:#1c2733;text-align:left}
+
+  /* PORTA DE ACESSO */
+  #acessoOverlay{position:fixed;inset:0;background:rgba(15,32,54,.94);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px}
+  .acesso-card{background:#fff;border-radius:14px;max-width:460px;width:100%;padding:28px;text-align:center;box-shadow:0 12px 40px rgba(0,0,0,.4)}
+  .acesso-card h2{color:#1e3a5f;font-size:1.15rem;margin-bottom:4px}
+  .acesso-card .sub{font-size:.85rem;color:#5a6b7a;margin-bottom:16px}
+  .acesso-card input{width:100%;padding:12px;border:1px solid #d9e2ec;border-radius:8px;font-size:1rem;text-align:center;text-transform:uppercase}
+  .acesso-card .btn{margin-top:12px}
+  .acesso-erro{background:#fdecea;color:#b3261e;border-radius:8px;padding:8px;font-size:.8rem;margin-top:10px;display:none}
+  .acesso-ajuda{font-size:.72rem;color:#8a94a3;margin-top:12px;line-height:1.5}
+  .user-badge{display:inline-block;margin-top:10px;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.35);border-radius:20px;padding:6px 14px;font-size:.8rem;color:#fff}
+  .user-badge strong{color:#ffe08a}
+  .user-trocar{display:inline-block;margin-left:10px;background:transparent;border:1px solid rgba(255,255,255,.4);color:#fff;border-radius:14px;padding:4px 10px;font-size:.72rem;cursor:pointer}
+  .user-trocar:hover{background:rgba(255,255,255,.15)}
+  .banner-teste{background:#fdf6e3;border:2px solid #b8860b;border-radius:10px;padding:10px 12px;margin-bottom:14px;font-size:.85rem}
+  .banner-teste strong{color:#8a6d1a}
+</style>
+</head>
+<body>
+
+<div id="acessoOverlay">
+  <div class="acesso-card">
+    <h2>🔐 Acesso ao Sistema</h2>
+    <p class="sub">Sistema de Apoio à Decisão Transfusional — Piloto Hemominas</p>
+    <input type="text" id="campoAcesso" placeholder="CRM 12345-MG · COREN 123456-MG · CHM2026" autocomplete="off" onkeydown="if(event.key==='Enter'){validarAcesso();}">
+    <button class="btn primario" onclick="validarAcesso()">Acessar</button>
+    <div class="acesso-erro" id="acessoErro"></div>
+    <div class="acesso-ajuda">
+      Digite o registro com a sigla: <strong>CRM</strong> (médico — decisor), <strong>COREN</strong> (enfermagem — conhecimento) ou o <strong>código CHM2026</strong> (visitante — teste).<br>
+      Ex.: CRM 12345-MG · COREN 123456-MG
+    </div>
+  </div>
+</div>
+
+<input type="radio" name="tab" id="tab-guia" checked hidden>
+<input type="radio" name="tab" id="tab-decisao" hidden>
+
+<header>
+  <h1>🩸 Decisão Transfusional – Hemácias</h1>
+  <p>Sistema de apoio à decisão · Gestão racional de hemocomponentes (PBM)</p>
+  <div id="usuarioInfo" class="user-badge" style="display:none"></div>
+</header>
+
+<div class="tabs">
+  <label class="tab" for="tab-guia">📖 Guia</label>
+  <label class="tab" for="tab-decisao">🩺 Decisão</label>
+</div>
+
+<main>
+  <section id="guia" class="panel">
+    <div class="card">
+      <h3>O que é este sistema</h3>
+      <p>Apoio à decisão transfusional baseado nas melhores evidências. Emite recomendação clara sobre transfusão de hemácias, priorizando a <strong>segurança do paciente</strong> e a <strong>gestão racional de hemocomponentes</strong> (PBM).</p>
+      <p>O viés padrão é <strong>restritivo e conservador</strong>. A conduta transfusional é sempre apresentada como <strong>opção</strong> ("pode transfundir"), <strong>nunca como obrigação</strong> ("deve transfundir"), sempre que a segurança do paciente permitir. Em casos borderline, a via conservadora (tolerância à anemia, otimização de ferro/B12, tratamento da causa base) é sempre apresentada como alternativa viável e ética, estimulando a decisão ativa do paciente/responsável como maior interessado.</p>
+      <div class="sugestao-prompt">💡 <strong>Este aplicativo é um veredito rápido à beira-leito.</strong> Para a análise completa, didática e com todas as nuances — perguntas condicionais, análise borderline detalhada, impacto das omissões e abordagem multidisciplinar — use o prompt completo da skill <strong>#Decisão Transfusional – Hemácias</strong> na Adapta ONE <strong>ou em qualquer outra IA de sua preferência</strong> (ChatGPT, Claude, Gemini etc.).</div>
+    </div>
+    <div class="card">
+      <h3>Os 3 pilares do PBM</h3>
+      <ul>
+        <li><strong>1º pilar — Otimizar eritropoiese:</strong> corrigir deficiências (ferro, B12, folato) antes de transfundir.</li>
+        <li><strong>2º pilar — Minimizar perdas:</strong> controle de sangramento, hemostasia, gestão de coletas.</li>
+        <li><strong>3º pilar — Tolerância à anemia:</strong> explorar a adaptação fisiológica do paciente estável, sem transfundir por Hb isolada.</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>Limiares de Hb (gatilhos, não obrigações)</h3>
+      <ul>
+        <li><span class="pill vermelho">Hb &lt; 5</span> Anemia crítica — risco iminente à vida. Transfusão indicada independentemente da causa.</li>
+        <li><span class="pill verde">Hb &lt; 7</span> Paciente crítico euvolêmico (TRICC); HDA (Villanueva, alvo 7–9); sepse sem choque.</li>
+        <li><span class="pill azul">Hb &lt; 8</span> Cardiopatia estável, cirurgia ortopédica/cardíaca (AABB 2023); neurocrítico não TCE.</li>
+        <li><span class="pill azul">Hb &lt; 8–9</span> SCA/IAM ou angina instável (MINT); choque séptico com hipoperfusão (sem limiar permissivo).</li>
+        <li><span class="pill azul">Hb &lt; 9</span> TCE (TRAIN).</li>
+        <li><span class="pill amarelo">Hb 7–8</span> Zona borderline — exige individualização do caso e dados objetivos de disóxia. Não transfundir por Hb isolada.</li>
+        <li><span class="pill vermelho">Hb &gt; 8</span> Geralmente <strong>não transfundir</strong> por Hb isolada.</li>
+      </ul>
+      <p class="nota">Regra de ouro: Hb é ponto de partida, <strong>nunca o único determinante</strong>. O limiar é um gatilho, não uma obrigação — em paciente estável, a tolerância à anemia pode ser explorada. <strong>Hipoxemia:</strong> SpO2 &lt; 90% (geral) ou &lt; 92% (cardiopata ou falciforme) e PaO2 arterial &lt; 60 mmHg. <strong>Hipoperfusão/disfunção orgânica:</strong> hipotensão (PAM &lt; 65, calculada automaticamente de PAS/PAD quando informadas), necessidade crescente de aminas, piora ventilatória e disfunção renal aguda (ou de outro órgão) são sinais objetivos que pesam a favor da avaliação transfusional — no choque séptico, sem limiar permissivo (CHEST 2024/2025). <strong>Isquemia miocárdica:</strong> alterações de ECG sugestivas (supra/infra de ST, inversão de onda T, novo bloqueio de ramo) ou troponina elevada configuram SCA — não usar estratégia restritiva (MINT). <strong>Risco de TACO:</strong> maior em idosos (≥ 70 anos) e baixo peso (&lt; 50 kg) — infundir lentamente, monitorizar congestão e avaliar diurético. O2ER pode ser estimado de SpO2 + ScvO2 quando não informado. A PAM é calculada como (PAS + 2 × PAD)/3. A decisão final deve envolver o paciente/responsável como maior interessado (decisão compartilhada).</p>
+      <div class="alerta-falciforme">⚠️ <strong>EXCEÇÃO — ANEMIA FALCIFORME:</strong> os limiares gerais de Hb <strong>NÃO se aplicam</strong> a pacientes com anemia falciforme. A lógica transfusional é própria e envolve riscos específicos (hiperhemólise, hiperviscosidade, AVC). Sempre conhecer a Hb de base e discutir com hematologia/centro de referência. SpO2 &lt; 92% ou queda &gt; 2–3% da basal sugere síndrome torácica aguda.</div>
+    </div>
+    <div class="card">
+      <h3>Escala de sangramento OMS/WHO</h3>
+      <ul>
+        <li><strong>Grau 0 — Ausente:</strong> sem evidência de sangramento.</li>
+        <li><strong>Grau 1 — Menor:</strong> petéquias, equimoses ≤ 5 cm, epistaxe autolimitada, spotting. → Não justifica transfusão.</li>
+        <li><strong>Grau 2 — Moderado:</strong> sangramento vaginal &gt; spotting, epistaxe &gt; 30 min, melena, hematúria macroscópica. → Avaliar contexto.</li>
+        <li><strong>Grau 3 — Grave:</strong> exige transfusão OU intervenção (hemostasia, embolização, cirurgia, endoscopia). → 1 unidade + reavaliação.</li>
+        <li><strong>Grau 4 — Debilitante/ameaçador:</strong> sítio crítico (SNC, pericárdio, retroperitônio) ou instabilidade. → Protocolo de hemorragia, transfusão imediata.</li>
+      </ul>
+      <p class="nota"><strong>Importante:</strong> "sangramento ativo" exige relato <em>explícito</em> de perda em curso (inclui hematêmese/hematoquezia ativas). Termos de padrão/histórico (SUA, menorragia, melena crônica, hematúria, epistaxe) <strong>não</strong> configuram sangramento ativo — reforçam suspeita de perda crônica/ferropenia.</p>
+    </div>
+    <div class="card">
+      <h3>Cenários especiais</h3>
+      <ul>
+        <li><strong>Neurocrítico:</strong> TCE → liberal (Hb &lt; 9, TRAIN); neurocrítico não TCE (pós-op tumor/aneurisma) → moderado (Hb &lt; 8); HSA aneurismática → moderado (Hb &lt; 8–9 se vasoespasmo).</li>
+        <li><strong>Cardiopata:</strong> SCA aguda → não restritivo (Hb &lt; 8–9); doença coronariana estável → restritivo (Hb &lt; 8); IC descompensada → cautela com TACO. Alterações de ECG sugestivas de isquemia (supra/infra de ST, inversão de onda T, novo bloqueio de ramo) ou troponina elevada → tratar como SCA.</li>
+        <li><strong>HDA — Hemorragia digestiva alta:</strong> restritivo (Hb &lt; 7, alvo 7–9, Villanueva); ativa/instável → transfundir + controle da fonte (endoscopia); melena crônica → ferro; cirrose associada → manter restritivo.</li>
+        <li><strong>Sepse e choque séptico:</strong> sepse sem choque → restritivo (Hb &lt; 7); choque séptico → Hb &lt; 7–8, com hipoperfusão sem limiar permissivo (CHEST 2024/2025).</li>
+        <li><strong>Oncológico:</strong> anemia crônica comum; decisão por sintomas; otimizar ferro/EPO; restritivo na ausência de sintomas.</li>
+        <li><strong>IRC/DRC:</strong> decisão por sintomas; candidatos a transplante → evitar transfusão (aloimunização).</li>
+        <li><strong>Cirrose:</strong> não transfundir por Hb isolada se estável; exceção HDA aguda ativa com instabilidade.</li>
+        <li><strong>Anemia carencial:</strong> VCM &lt; 80 → investigar ferropenia antes (se Hb ≥ 7); VCM &gt; 100 → suspeitar B12/folato.</li>
+        <li><strong>Idoso frágil:</strong> idade ≥ 70 anos e/ou baixo peso (&lt; 50 kg) aumentam o risco de TACO e de complicações — peso e idade são relevantes (não obrigatórios) para o alerta.</li>
+        <li><strong>Anemia falciforme:</strong> lógica própria — conhecer Hb de base, evitar transfusão inadvertida (hiperhemólise, hiperviscosidade, AVC), discutir com hematologia/centro de referência.</li>
+      </ul>
+      <p class="nota">O formulário permite marcar <strong>mais de um cenário</strong>, pois quadros clínicos podem se sobrepor (ex.: SCA + IRC, HDA + cirrose, choque séptico + IRC, pós-op neuro + HSA). Quando há sobreposição, o sistema usa o limiar mais alto entre os cenários marcados, exceto HDA (nunca liberal) e anemia falciforme (lógica própria sempre prevalece).</p>
+    </div>
+    <div class="card">
+      <h3>Como usar a aba Decisão</h3>
+      <p>Preencha os parâmetros do paciente e clique em <strong>Calcular recomendação</strong>. O sistema aplica o algoritmo da skill e devolve o <strong>veredito de bolso</strong> (sempre como opção, nunca como obrigação), o nível de confiança, a análise borderline (prós/contras) e o checklist de coleta quando houver omissões.</p>
+      <p>O resultado inclui uma <strong>balança visual</strong> (⚖️) que mostra o peso relativo da via conservadora vs transfusão e <strong>inclina conforme o caso</strong> — o prato que <strong>desce</strong> é o que pesa mais na decisão.</p>
+      <p class="nota">Este é um <strong>subsídio à decisão clínica</strong>, não um substituto do julgamento médico. Para a análise completa e didática do caso, use o prompt da skill #Decisão Transfusional – Hemácias — na Adapta ONE ou em qualquer outra IA de sua preferência.</p>
+    </div>
+  </section>
+
+  <section id="decisao" class="panel">
+    <div id="bannerTeste" style="display:none" class="banner-teste">
+      <strong>⚠️ Modo teste/conhecimento:</strong> você acessou o sistema sem registro de médico (CRM). Pode explorar e testar, mas <strong>não devem ser tomadas decisões transfusionais</strong> — a decisão é exclusiva do médico responsável (CRM).
+    </div>
+    <div class="aviso-dados">
+      <strong>⚠️ Aviso importante:</strong> A qualidade da recomendação depende da qualidade dos dados informados. <strong>Entrada de dados errados ou incompletos pode gerar indicações erradas.</strong> Confira os valores antes de calcular.
+    </div>
+
+    <div class="card">
+      <h3>Dados do paciente</h3>
+      <div class="grid">
+        <div><label>Hb atual (g/dL) *</label><input type="number" id="hb" step="0.1" min="0" max="20" placeholder="ex.: 6.8"></div>
+        <div><label>Hb prévia (g/dL) — cinética</label><input type="number" id="hbPrevia" step="0.1" min="0" max="20" placeholder="opcional"></div>
+        <div><label>Tempo de instalação</label><select id="tempo"><option value="desconhecido">Desconhecido (default: crônica)</option><option value="aguda">Aguda (dias)</option><option value="cronica">Crônica (≥ 4 semanas)</option></select></div>
+        <div><label>Idade (anos) — opcional</label><input type="number" id="idade" step="1" min="0" max="130" placeholder="opcional — alerta de TACO"></div>
+        <div><label>Peso (kg) — opcional</label><input type="number" id="peso" step="0.5" min="0" max="300" placeholder="opcional — alerta de TACO"></div>
+        <div><label>PAS (mmHg) — opcional</label><input type="number" id="pas" step="1" min="0" max="300" placeholder="ex.: 110 — calcula PAM"></div>
+        <div><label>PAD (mmHg) — opcional</label><input type="number" id="pad" step="1" min="0" max="200" placeholder="ex.: 70 — calcula PAM"></div>
+      </div>
+
+      <label>Cenário(s) clínico(s) — marque todos que se aplicam *</label>
+      <div class="radio-group">
+        <label><input type="checkbox" class="cenario" value="geral"> Geral / não especificado</label>
+        <label><input type="checkbox" class="cenario" value="falciforme"> Anemia falciforme / drepanocitose</label>
+        <label><input type="checkbox" class="cenario" value="tce"> TCE (trauma cranioencefálico)</label>
+        <label><input type="checkbox" class="cenario" value="neuro_ntce"> Neurocrítico não TCE (pós-op tumor/aneurisma)</label>
+        <label><input type="checkbox" class="cenario" value="hsa"> HSA aneurismática</label>
+        <label><input type="checkbox" class="cenario" value="hic"> Hemorragia intracraniana espontânea</label>
+        <label><input type="checkbox" class="cenario" value="sca"> SCA / IAM / angina instável (quadro AGUDO)</label>
+        <label><input type="checkbox" class="cenario" value="coronario"> Doença coronariana estável (medicada ou operada)</label>
+        <label><input type="checkbox" class="cenario" value="ic_descomp"> Insuficiência cardíaca descompensada</label>
+        <label><input type="checkbox" class="cenario" value="hda"> HDA — Hemorragia digestiva alta</label>
+        <label><input type="checkbox" class="cenario" value="sepse"> Sepse sem choque</label>
+        <label><input type="checkbox" class="cenario" value="choque_septico"> Choque séptico (agudo &lt;24h ou ≥24h)</label>
+        <label><input type="checkbox" class="cenario" value="onco"> Oncológico (câncer / quimioterapia)</label>
+        <label><input type="checkbox" class="cenario" value="irc"> IRC / DRC</label>
+        <label><input type="checkbox" class="cenario" value="cirrose"> Cirrose / hepatopatia</label>
+        <label><input type="checkbox" class="cenario" value="carencial"> Anemia carencial</label>
+        <label><input type="checkbox" class="cenario" value="ortopedia"> Cirurgia ortopédica</label>
+      </div>
+
+      <div id="falciformeBlock" style="display:none">
+        <div class="alerta-falciforme">
+          <strong>⚠️ ANEMIA FALCIFORME — ATENÇÃO ESPECIAL:</strong> A transfusão neste paciente deve ser feita com <strong>extrema cautela</strong> pelos riscos de <strong>hiperhemólise</strong> (reação hemolítica tardia), <strong>hiperviscosidade</strong> (elevar a Hb pode desencadear crise vaso-oclusiva) e <strong>AVC</strong>. A <strong>Hb de base</strong> deve ser conhecida e o caso <strong>discutido com a hematologia e/ou o plantão do centro de referência</strong> onde o paciente faz acompanhamento. Transfusões inadvertidas podem aumentar significativamente os riscos de complicações e morte. SpO2 &lt; 92% ou queda &gt; 2–3% da basal sugere síndrome torácica aguda.
+        </div>
+        <label>Hb de base do paciente falciforme (g/dL) — obrigatório *</label>
+        <input type="number" id="hbBaseFalc" step="0.1" min="0" max="20" placeholder="ex.: 8.0 (Hb habitual do paciente)">
+      </div>
+
+      <div id="hdaBlock" style="display:none">
+        <label>HDA — atividade do sangramento</label>
+        <div class="radio-group">
+          <label><input type="radio" name="hdaAtividade" value="ativa"> Ativa (hematêmese / hematoquezia)</label>
+          <label><input type="radio" name="hdaAtividade" value="melena_cronica"> Melena crônica / padrão</label>
+          <label><input type="radio" name="hdaAtividade" value="desconhecida"> Desconhecida</label>
+        </div>
+        <label>Endoscopia prevista?</label>
+        <div class="radio-group">
+          <label><input type="radio" name="hdaEndoscopia" value="nao"> Não</label>
+          <label><input type="radio" name="hdaEndoscopia" value="sim"> Sim</label>
+        </div>
+      </div>
+
+      <div id="choqueBlock" style="display:none">
+        <label>Tempo de choque séptico</label>
+        <div class="radio-group">
+          <label><input type="radio" name="choqueTempo" value="menos24"> &lt; 24h (agudo)</label>
+          <label><input type="radio" name="choqueTempo" value="mais24"> ≥ 24h</label>
+        </div>
+      </div>
+
+      <label>Sinais de hipóxia / sintomas</label>
+      <div class="radio-group">
+        <label><input type="checkbox" class="hipoxia" value="dispneia"> Dispneia</label>
+        <label><input type="checkbox" class="hipoxia" value="taquicardia"> Taquicardia</label>
+        <label><input type="checkbox" class="hipoxia" value="angina"> Angina</label>
+        <label><input type="checkbox" class="hipoxia" value="tontura"> Tontura</label>
+        <label><input type="checkbox" class="hipoxia" value="sincope"> Síncope</label>
+        <label><input type="checkbox" class="hipoxia" value="nenhum"> Nenhum</label>
+      </div>
+
+      <label>Sinais de hipoperfusão / disfunção orgânica</label>
+      <div class="radio-group">
+        <label><input type="checkbox" class="disfuncao" value="hipotensao"> Hipotensão (PAM &lt; 65 mmHg)</label>
+        <label><input type="checkbox" class="disfuncao" value="aminas"> Aumento de necessidade de aminas</label>
+        <label><input type="checkbox" class="disfuncao" value="piora_vent"> Piora ventilatória</label>
+        <label><input type="checkbox" class="disfuncao" value="dra"> Disfunção renal aguda (DRA)</label>
+        <label><input type="checkbox" class="disfuncao" value="outra"> Outra disfunção orgânica</label>
+        <label><input type="checkbox" class="disfuncao" value="nenhuma_d"> Nenhuma</label>
+      </div>
+      <p class="nota">Se PAS e PAD forem informados, a PAM é calculada automaticamente — PAM &lt; 65 já conta como hipoperfusão, mesmo sem marcar a caixa.</p>
+
+      <label>Sangramento</label>
+      <div class="radio-group">
+        <label><input type="radio" name="sangramento" value="nao"> Não</label>
+        <label><input type="radio" name="sangramento" value="ativo"> Ativo (relato explícito)</label>
+        <label><input type="radio" name="sangramento" value="ambiguo"> Termo ambíguo (melena, hematúria...)</label>
+      </div>
+
+      <div id="omsBlock" style="display:none">
+        <label>Gravidade OMS/WHO</label>
+        <select id="oms">
+          <option value="0">Grau 0 — Ausente</option>
+          <option value="1">Grau 1 — Menor</option>
+          <option value="2">Grau 2 — Moderado</option>
+          <option value="3">Grau 3 — Grave</option>
+          <option value="4">Grau 4 — Debilitante/ameaçador</option>
+        </select>
+      </div>
+
+      <label>Estabilidade hemodinâmica</label>
+      <div class="radio-group">
+        <label><input type="radio" name="estabilidade" value="estavel"> Estável</label>
+        <label><input type="radio" name="estabilidade" value="instavel"> Instável</label>
+      </div>
+
+      <label>Cirurgia prevista em até 72h?</label>
+      <div class="radio-group">
+        <label><input type="radio" name="cirurgia" value="nao"> Não</label>
+        <label><input type="radio" name="cirurgia" value="sim"> Sim</label>
+      </div>
+
+      <div id="adiarBlock" style="display:none">
+        <label>É possível adiar a cirurgia para otimização PBM (ferro ± eritropoietina + B12)?</label>
+        <div class="radio-group">
+          <label><input type="radio" name="cirurgiaAdiavel" value="sim"> Sim, pode adiar</label>
+          <label><input type="radio" name="cirurgiaAdiavel" value="nao"> Não, é inadiável</label>
+        </div>
+      </div>
+
+      <label>Isquemia miocárdica (ECG/troponina)?</label>
+      <div class="radio-group">
+        <label><input type="radio" name="isquemia" value="nao"> Não</label>
+        <label><input type="radio" name="isquemia" value="sim"> Sim</label>
+        <label><input type="radio" name="isquemia" value="desconhecido"> Desconhecido</label>
+      </div>
+
+      <label>Alterações de ECG sugestivas de isquemia</label>
+      <div class="radio-group">
+        <label><input type="checkbox" class="ecg" value="supra_st"> Supra de ST</label>
+        <label><input type="checkbox" class="ecg" value="infra_st"> Infra de ST / depressão</label>
+        <label><input type="checkbox" class="ecg" value="inversao_t"> Inversão de onda T</label>
+        <label><input type="checkbox" class="ecg" value="brd_novo"> Novo bloqueio de ramo</label>
+        <label><input type="checkbox" class="ecg" value="outra_ecg"> Outra alteração</label>
+        <label><input type="checkbox" class="ecg" value="sem_ecg"> Sem alterações</label>
+      </div>
+
+      <label>VCM</label>
+      <div class="radio-group">
+        <label><input type="radio" name="vcm" value="normal"> Normal (80–100)</label>
+        <label><input type="radio" name="vcm" value="baixo"> Baixo (&lt; 80)</label>
+        <label><input type="radio" name="vcm" value="alto"> Alto (&gt; 100)</label>
+        <label><input type="radio" name="vcm" value="desconhecido"> Desconhecido</label>
+      </div>
+
+      <h3 style="margin-top:18px">Parâmetros de oxigenação (UTI)</h3>
+      <div class="grid">
+        <div><label>Lactato (mmol/L)</label><input type="number" id="lactato" step="0.1" placeholder="ex.: 1.8"></div>
+        <div><label>ScvO2 (%)</label><input type="number" id="scvo2" step="1" placeholder="65–75"></div>
+        <div><label>O2ER (%) — opcional (se vazio, calculado de SpO2/ScvO2)</label><input type="number" id="o2er" step="1" placeholder="&lt; 30 — ou deixe vazio para calcular"></div>
+        <div><label>BE</label><input type="number" id="be" step="0.5" placeholder="-2 a +2"></div>
+        <div><label>SpO2 (%)</label><input type="number" id="spo2" step="1" placeholder="ex.: 96 — &lt; 90 hipoxemia"></div>
+        <div><label>PaO2 arterial (mmHg)</label><input type="number" id="pao2" step="1" placeholder="ex.: 85 — &lt; 60 = hipoxemia"></div>
+        <div><label>FiO2 (%) — para calcular P/F</label><input type="number" id="fio2" step="1" placeholder="ex.: 21"></div>
+      </div>
+
+      <button class="btn primario" onclick="calcular()">Calcular recomendação</button>
+      <button class="btn secundario" onclick="limpar()">Limpar</button>
+    </div>
+
+    <div id="resultado" class="resultado"></div>
+  </section>
+</main>
+
+<script>
+var USUARIO = null;
+
+function registrarLog(entrada){
+  try{
+    var logs = JSON.parse(localStorage.getItem('hemoAcessos')||'[]');
+    logs.push(entrada);
+    localStorage.setItem('hemoAcessos', JSON.stringify(logs));
+  }catch(e){}
+}
+
+function validarAcesso(){
+  var campo = document.getElementById('campoAcesso').value.trim().toUpperCase();
+  var erro = document.getElementById('acessoErro');
+  erro.style.display = 'none';
+  if(campo === 'CHM2026'){
+    USUARIO = {tipo:'Visitante', rotulo:'Visitante (CHM2026)', decisor:false};
+  } else if(/^CRM\s*\d{3,6}-[A-Z]{2}$/.test(campo)){
+    USUARIO = {tipo:'Médico', rotulo:campo.replace(/\s+/g,' '), decisor:true};
+  } else if(/^COREN\s*\d{4,8}-[A-Z]{2}$/.test(campo)){
+    USUARIO = {tipo:'Enfermagem', rotulo:campo.replace(/\s+/g,' '), decisor:false};
+  } else {
+    erro.textContent = 'Formato inválido. Use: CRM 12345-MG, COREN 123456-MG ou o código CHM2026.';
+    erro.style.display = 'block';
+    return;
+  }
+  var agora = new Date();
+  registrarLog('Acesso: ' + USUARIO.rotulo + ' · ' + agora.toLocaleString('pt-BR'));
+  document.getElementById('acessoOverlay').style.display = 'none';
+  var badge = document.getElementById('usuarioInfo');
+  badge.style.display = 'inline-block';
+  badge.innerHTML = '👤 <strong>' + USUARIO.rotulo + '</strong> · ' + agora.toLocaleString('pt-BR') + ' <button class="user-trocar" onclick="trocarUsuario()">Trocar</button>';
+  document.getElementById('bannerTeste').style.display = USUARIO.decisor ? 'none' : 'block';
+  document.getElementById('resultado').innerHTML = '';
+}
+
+function trocarUsuario(){
+  document.getElementById('acessoOverlay').style.display = 'flex';
+  document.getElementById('campoAcesso').value = '';
+  document.getElementById('campoAcesso').focus();
+}
+
+function getVal(id){ var el=document.getElementById(id); return el?el.value.replace(/^\s+|\s+$/g,''):''; }
+function getNum(id){ var v=parseFloat(getVal(id)); return isNaN(v)?null:v; }
+function radio(name){ var el=document.querySelector('input[name="'+name+'"]:checked'); return el?el.value:null; }
+function checkedValues(cls){ var arr=[]; var lista=document.querySelectorAll('.'+cls+':checked'); for(var i=0;i<lista.length;i++){ arr.push(lista[i].value); } return arr; }
+function hipoxias(){ return checkedValues('hipoxia'); }
+function disfuncoes(){ return checkedValues('disfuncao'); }
+function ecgs(){ return checkedValues('ecg'); }
+function cenarios(){ return checkedValues('cenario'); }
+function rotuloCenario(v){
+  var map={geral:'Geral',falciforme:'Anemia falciforme',tce:'TCE',neuro_ntce:'Neurocrítico não TCE (pós-op)',hsa:'HSA aneurismática',hic:'HIC espontânea',sca:'SCA/IAM agudo',coronario:'Doença coronariana estável',ic_descomp:'IC descompensada',hda:'HDA — Hemorragia digestiva alta',sepse:'Sepse sem choque',choque_septico:'Choque séptico',onco:'Oncológico',irc:'IRC/DRC',cirrose:'Cirrose/hepatopatia',carencial:'Anemia carencial',ortopedia:'Cirurgia ortopédica'};
+  return map[v]||v;
+}
+function rotuloDisfuncao(v){
+  var map={hipotensao:'Hipotensão (PAM<65)',aminas:'Aumento de aminas',piora_vent:'Piora ventilatória',dra:'Disfunção renal aguda',outra:'Outra disfunção orgânica'};
+  return map[v]||v;
+}
+function rotuloECG(v){
+  var map={supra_st:'Supra de ST',infra_st:'Infra de ST/depressão',inversao_t:'Inversão de onda T',brd_novo:'Novo bloqueio de ramo',outra_ecg:'Outra alteração'};
+  return map[v]||v;
+}
+
+var sangs=document.querySelectorAll('input[name="sangramento"]');
+for(var si=0;si<sangs.length;si++){
+  (function(r){
+    r.onchange=function(){
+      document.getElementById('omsBlock').style.display=(r.checked && r.value!=='nao')?'block':'none';
+    };
+  })(sangs[si]);
+}
+
+function atualizarBlocos(){
+  var cList=cenarios();
+  document.getElementById('falciformeBlock').style.display = cList.indexOf('falciforme')>=0 ? 'block' : 'none';
+  document.getElementById('hdaBlock').style.display = cList.indexOf('hda')>=0 ? 'block' : 'none';
+  document.getElementById('choqueBlock').style.display = cList.indexOf('choque_septico')>=0 ? 'block' : 'none';
+}
+var cenarioChecks=document.querySelectorAll('.cenario');
+for(var ci=0;ci<cenarioChecks.length;ci++){
+  (function(c){ c.onchange=atualizarBlocos; })(cenarioChecks[ci]);
+}
+
+var cirurgiaRadios=document.querySelectorAll('input[name="cirurgia"]');
+for(var cri=0;cri<cirurgiaRadios.length;cri++){
+  (function(r){
+    r.onchange=function(){
+      document.getElementById('adiarBlock').style.display=(r.checked && r.value==='sim')?'block':'none';
+    };
+  })(cirurgiaRadios[cri]);
+}
+
+function marcarSelecao(){
+  var inputs=document.querySelectorAll('input');
+  for(var i=0;i<inputs.length;i++){
+    var inp=inputs[i];
+    var lbl=inp.parentNode;
+    if(lbl && lbl.tagName==='LABEL'){ lbl.className = inp.checked ? 'sel' : ''; }
+  }
+}
+document.addEventListener('change',marcarSelecao,false);
+
+function calcular(){
+  var hb=getNum('hb');
+  if(hb===null){ alert('Informe a Hb atual.'); return; }
+  var cList=cenarios();
+  if(cList.length===0){ alert('Marque pelo menos um cenário clínico.'); return; }
+
+  var tempo=getVal('tempo')||'desconhecido';
+  var sangramento=radio('sangramento');
+  var oms=parseInt(getVal('oms')||'0');
+  var estabilidade=radio('estabilidade');
+  var cirurgia=radio('cirurgia');
+  var cirurgiaAdiavel=radio('cirurgiaAdiavel');
+  var isquemia=radio('isquemia');
+  var vcm=radio('vcm')||'desconhecido';
+  var hip=hipoxias();
+  var temHipoxia=hip.length>0 && !(hip.length===1 && hip[0]==='nenhum');
+  var disf=disfuncoes();
+  var disfChecked=disf.length>0 && !(disf.length===1 && disf[0]==='nenhuma_d');
+  var ecg=ecgs();
+  var temECGIsquemia=ecg.length>0 && !(ecg.length===1 && ecg[0]==='sem_ecg');
+  var isquemiaObj = (isquemia==='sim') || temECGIsquemia;
+
+  var idade=getNum('idade'), peso=getNum('peso');
+  var idoso = idade!==null && idade>=70;
+  var baixoPeso = peso!==null && peso<50;
+  var riscoTACO = idoso || baixoPeso;
+
+  var pas=getNum('pas'), pad=getNum('pad');
+  var pam=null, pamBaixa=false;
+  if(pas!==null && pad!==null && pas>0 && pad>0){ pam=Math.round(((pas+2*pad)/3)*10)/10; }
+  if(pam!==null && pam<65){ pamBaixa=true; }
+  var temDisfuncao = disfChecked || pamBaixa;
+
+  var temFalc = cList.indexOf('falciforme')>=0;
+  var temTce = cList.indexOf('tce')>=0;
+  var temNeuroNtce = cList.indexOf('neuro_ntce')>=0;
+  var temHsa = cList.indexOf('hsa')>=0;
+  var temHic = cList.indexOf('hic')>=0;
+  var temSca = cList.indexOf('sca')>=0;
+  var temCoronario = cList.indexOf('coronario')>=0;
+  var temIc = cList.indexOf('ic_descomp')>=0;
+  var temHda = cList.indexOf('hda')>=0;
+  var temSepse = cList.indexOf('sepse')>=0;
+  var temChoqueSeptico = cList.indexOf('choque_septico')>=0;
+  var temOnco = cList.indexOf('onco')>=0;
+  var temIrc = cList.indexOf('irc')>=0;
+  var temCirrose = cList.indexOf('cirrose')>=0;
+  var temCarencial = cList.indexOf('carencial')>=0;
+  var temOrtopedia = cList.indexOf('ortopedia')>=0;
+
+  var hdaAtividade = temHda ? (radio('hdaAtividade')||'desconhecida') : null;
+  var hdaEndoscopia = temHda ? radio('hdaEndoscopia') : null;
+  var hdaAtiva = temHda && (sangramento==='ativo' || hdaAtividade==='ativa');
+  var choqueTempo = temChoqueSeptico ? (radio('choqueTempo')||'desconhecido') : null;
+
+  var lactato=getNum('lactato'), scvo2=getNum('scvo2'), o2er=getNum('o2er'), be=getNum('be'), spo2=getNum('spo2'), pao2=getNum('pao2'), fio2=getNum('fio2');
+
+  var o2erCalc=null;
+  if(o2er===null && spo2!==null && scvo2!==null && spo2>0){ o2erCalc=((spo2-scvo2)/spo2)*100; }
+  var o2erUsado = (o2er!==null)?o2er:o2erCalc;
+
+  var pf=null;
+  if(pao2!==null && fio2!==null && fio2>0){ pf=Math.round(pao2/(fio2/100)); }
+  var pfComprometido = pf!==null && pf<300;
+
+  var temOxi=(lactato!==null||scvo2!==null||o2erUsado!==null||be!==null);
+  var disoxia=(lactato!==null&&lactato>2)||(scvo2!==null&&scvo2<65)||(o2erUsado!==null&&o2erUsado>30)||(be!==null&&be<-2);
+
+  var limiarSpO2=(temFalc||temSca||temCoronario)?92:90;
+  var hipoxemia=(spo2!==null&&spo2<limiarSpO2)||(pao2!==null&&pao2<60);
+
+  var confianca='ALTA';
+  var omissoes=[];
+  var faltando=[];
+  var soGeral = cList.length===1 && cList[0]==='geral';
+  if(soGeral){ confianca='BAIXA'; omissoes.push('Cenário clínico específico não identificado'); }
+  if(temOxi){
+    if(lactato===null){ confianca='BAIXA'; omissoes.push('Lactato ausente'); faltando.push('Lactato'); }
+    if(scvo2===null){ confianca='BAIXA'; omissoes.push('ScvO2 ausente'); faltando.push('ScvO2'); }
+    if(o2er===null && o2erCalc===null){ confianca='BAIXA'; omissoes.push('O2ER ausente'); faltando.push('O2ER'); }
+    if(be===null){ confianca='BAIXA'; omissoes.push('BE ausente'); faltando.push('BE'); }
+  }
+
+  var veredito=null, motivo='', detalhe='', opcao='', omsTexto='';
+
+  if(temFalc){
+    var hbBase = getNum('hbBaseFalc');
+    if(hbBase===null){ alert('Paciente falciforme: informe a Hb de base (campo obrigatório).'); return; }
+    if((hdaAtiva || sangramento==='ativo') && (oms>=3 || estabilidade==='instavel')){
+      veredito='TRANSFUNDIR'; motivo='Sangramento ativo grave/instabilidade em paciente falciforme.';
+      detalhe='URGÊNCIA: discutir IMEDIATAMENTE com hematologia/centro de referência. Considerar transfusão de troca se indicado. Não elevar Hb acima de 10 g/dL (risco de hiperviscosidade).';
+      opcao='Em falciforme, a transfusão é decisão conjunta com a hematologia. Preferir transfusão de troca em complicações agudas. Evitar transfusão simples inadvertida.';
+    }
+    else if((temHipoxia || hipoxemia || temDisfuncao) && (hip.indexOf('sincope')>=0 || hip.indexOf('angina')>=0 || hipoxemia || temDisfuncao) && hb < hbBase){
+      veredito='APROFUNDAR'; motivo='Sintomas relevantes, hipoxemia ou disfunção orgânica com Hb abaixo da base em falciforme.';
+      detalhe='Discutir com hematologia/centro de referência. Em suspeita de AVC, síndrome torácica aguda ou sequestro (hipotensão, disfunção orgânica), considerar transfusão de troca. Não transfundir por Hb isolada.';
+      opcao='A transfusão em falciforme NÃO segue limiares gerais. Decisão conjunta com hematologia. Conhecer Hb de base e alvo (geralmente ≤ 10 g/dL).';
+    }
+    else {
+      veredito='NAO'; motivo='Anemia falciforme: não transfundir por Hb isolada.';
+      detalhe='A lógica transfusional é própria. Conhecer Hb de base ('+hbBase+' g/dL). Discutir com hematologia/centro de referência. Transfusão inadvertida aumenta risco de hiperhemólise, hiperviscosidade e AVC.';
+      opcao='Em falciforme estável, a transfusão é evitada. Se houver indicação específica (AVC, síndrome torácica aguda, pré-operatório, crise aplásica), discutir com hematologia — preferir transfusão de troca e manter Hb ≤ 10 g/dL.';
+    }
+    confianca='MODERADA';
+    omissoes.push('Caso falciforme requer discussão com hematologia/centro de referência');
+  }
+  else if(veredito===null){
+    if(hdaAtiva || sangramento==='ativo'){
+      if(oms>=3 || estabilidade==='instavel'){
+        veredito='TRANSFUNDIR'; motivo='Sangramento ativo'+(temHda?' (HDA)':'')+' grau '+oms+' OMS/WHO'+(estabilidade==='instavel'?' com instabilidade hemodinâmica':'')+'.';
+        detalhe='Protocolo de hemorragia: transfusão + controle da fonte'+(temHda?' (endoscopia digestiva alta)':'')+'. Em HDA manter alvo 7-9 (Villanueva).';
+        opcao='Neste cenário (sangramento ativo grave/instabilidade), a transfusão é uma OPÇÃO indicada — mas sempre em paralelo ao controle da fonte e à reavaliação contínua. Em HDA, nunca estratégia liberal.';
+      } else {
+        veredito='APROFUNDAR'; motivo='Sangramento ativo'+(temHda?' (HDA)':'')+' grau '+oms+' OMS/WHO, sem instabilidade.';
+        detalhe='Avaliar contexto: grau 1-2 não indica transfusão isolada por sangramento. Em HDA, alvo 7-9.';
+      }
+    } else {
+      if(hb < 5){
+        veredito='TRANSFUNDIR'; motivo='Hb '+hb+' g/dL — anemia crítica com risco iminente à vida.';
+        detalhe='Transfusão indicada independentemente da causa. 1 unidade + reavaliação, tratar causa base em paralelo.';
+        opcao='A transfusão é uma OPÇÃO indicada neste cenário de anemia crítica. Não há alternativa conservadora segura neste momento — a tolerância à anemia não se aplica a valores tão baixos.';
+      } else {
+        var cronica=(tempo==='cronica'||tempo==='desconhecido');
+        if(cronica && temCirrose && !temCarencial && !temOnco && !temHda){
+          veredito='NAO'; motivo='Cirrose: não transfundir por Hb isolada se estável.';
+          detalhe='Risco de hipertensão portal e sangramento varicoso. Tratar causa base.';
+        } else if(cronica && temHda && !hdaAtiva && sangramento!=='ativo'){
+          veredito='APROFUNDAR'; motivo='HDA crônica (melena sem atividade) com Hb '+hb+'.';
+          detalhe='Não transfundir por Hb isolada em HDA. Investigar atividade (pergunta condicional), ferropenia (VCM) e causa. Repor ferro antes.';
+          opcao='Em HDA crônica/melena de padrão, a prioridade é investigar e repor ferro — não transfundir por Hb isolada.';
+        } else if(cronica && temOnco && !temSca && !temTce && !temHsa && !temHic && hb>=7 && !temHipoxia && !hipoxemia && !temDisfuncao){
+          veredito='APROFUNDAR'; motivo='Anemia crônica em paciente oncológico com Hb '+hb+'.';
+          detalhe='Decisão por sintomas: otimizar causa base (ferro, deficiências, doença oncológica) antes de transfundir. Se sintomático, hipoxêmico ou com disfunção orgânica, transfusão pode ser considerada.';
+        } else if(cronica && (temCarencial || vcm==='baixo') && hb>=7){
+          veredito='APROFUNDAR'; motivo='Anemia carencial/microcítica (VCM<80) com Hb '+hb+'.';
+          detalhe='Investigar ferropenia antes de transfundir. Priorizar reposição de ferro.';
+        } else if(cronica && vcm==='alto' && hb>=7){
+          veredito='APROFUNDAR'; motivo='VCM>100 sugere deficiência de B12/folato.';
+          detalhe='Investigar e repor substratos antes de considerar transfusão.';
+        }
+        if(veredito===null){
+          var limiares=[];
+          if(temTce){ limiares.push({v:9,n:'TCE (TRAIN)'}); }
+          if(temNeuroNtce){ limiares.push({v:8,n:'Neurocrítico não TCE (moderado)'}); }
+          if(temHsa){ limiares.push({v:8,n:'HSA aneurismática (SAHARA)'}); }
+          if(temHic){ limiares.push({v:8,n:'HIC espontânea'}); }
+          if(temSca || isquemiaObj){ limiares.push({v:8.5,n:'SCA (MINT)'}); }
+          if(temCoronario || temOrtopedia){ limiares.push({v:8,n:'AABB 2023 (DCV estável/ortopedia)'}); }
+          if(temIrc){ limiares.push({v:7.5,n:'IRC/DRC (KDIGO)'}); }
+          if(temIc){ limiares.push({v:7,n:'IC descompensada (cautela TACO)'}); }
+          if(temOnco){ limiares.push({v:7,n:'Oncológico (restritivo)'}); }
+          if(temHda){ limiares.push({v:7,n:'HDA (Villanueva — restritivo)'}); }
+          if(temSepse){ limiares.push({v:7,n:'Sepse sem choque (restritivo)'}); }
+          if(temChoqueSeptico){ limiares.push({v:7.5,n:'Choque séptico (CHEST — sem limiar permissivo)'}); }
+          if(limiares.length===0){ limiares.push({v:7,n:'geral'}); }
+          if(temHda){
+            for(var li=0;li<limiares.length;li++){ if(limiares[li].v>7){ limiares[li].v=7; limiares[li].n=limiares[li].n+' (limitado a 7 — HDA nunca liberal)'; } }
+          }
+          var limiar=7, limiarNome='geral';
+          for(var li2=0;li2<limiares.length;li2++){ if(limiares[li2].v>limiar){ limiar=limiares[li2].v; limiarNome=limiares[li2].n; } }
+          if(disoxia){ veredito='TRANSFUNDIR'; motivo='Disóxia instalada (lactato>2, ScvO2<65, O2ER>30'+(o2erCalc!==null?' [O2ER calculado]':'')+', BE<-2).'; detalhe='1 unidade + reavaliar. Transfusão subsidiada por dados objetivos.'; opcao='A transfusão é uma OPÇÃO indicada neste cenário, mas a via conservadora (tolerância à anemia) pode ser considerada se o paciente estiver estável e adaptado. Discutir em equipe.'; }
+          else if(hipoxemia && hb<8){ veredito='TRANSFUNDIR'; motivo='Hipoxemia (SpO2<'+limiarSpO2+'%'+(pao2!==null&&pao2<60?' ou PaO2<60 mmHg':'')+') com Hb<8.'; detalhe='Avaliar 1 unidade + reavaliação. Considerar otimização de substratos e avaliar causa da hipoxemia.'; opcao='PODE transfundir — mas não é obrigatório. Em paciente estável, a tolerância à anemia (3º pilar do PBM) é uma alternativa viável e ética. Discuta em equipe.'; }
+          else if(temHipoxia && hb<8){ veredito='TRANSFUNDIR'; motivo='Sintomas de hipóxia com Hb<8.'; detalhe='Avaliar 1 unidade + reavaliação. Considerar otimização de substratos.'; opcao='PODE transfundir — mas não é obrigatório. Em paciente estável, a tolerância à anemia (3º pilar do PBM) é uma alternativa viável e ética. Discuta em equipe.'; }
+          else if(temDisfuncao && hb<8){ veredito='TRANSFUNDIR'; motivo='Sinais de hipoperfusão/disfunção orgânica com Hb<8.'+(pamBaixa?' PAM '+pam+' mmHg (<65).':''); detalhe='Hipotensão, necessidade crescente de aminas, piora ventilatória ou disfunção orgânica — avaliar 1 unidade + reavaliação e otimizar causa base. No choque séptico, sem limiar permissivo (CHEST).'; opcao='PODE transfundir — mas não é obrigatório. Em paciente estável, a tolerância à anemia (3º pilar do PBM) é uma alternativa viável e ética. Discuta em equipe.'; }
+          else if(isquemiaObj && hb<8.5){ veredito='TRANSFUNDIR'; motivo='Isquemia miocárdica (SCA)'+(temECGIsquemia?' — ECG com '+ecg.map(rotuloECG).join(', '):'')+' com Hb<8.5.'; detalhe='Não usar estratégia restritiva (MINT). Avaliar 1 unidade + reavaliação e tratar a síndrome coronariana.'; opcao='PODE transfundir — mas não é obrigatório. Em paciente estável, a tolerância à anemia (3º pilar do PBM) é uma alternativa viável e ética. Discuta em equipe.'; }
+          else if(hb<limiar){
+            if(hb<7 && (temCoronario||temOrtopedia||temIrc||temIc||temOnco||soGeral||temHda||temSepse||temChoqueSeptico||temNeuroNtce)){
+              veredito='TRANSFUNDIR'; motivo='Hb<'+limiar+' ('+limiarNome+') — gatilho atingido.'; detalhe='PODE transfundir 1 unidade + reavaliar. Explorar tolerância se estável.'; opcao='A transfusão é uma OPÇÃO (não obrigação). Se o paciente estiver estável e adaptado, a via conservadora pode ser explorada. Reavaliar sempre.';
+            } else {
+              veredito='APROFUNDAR'; motivo='Hb<'+limiar+' no cenário '+limiarNome+'.'; detalhe='Análise de prós e contras + abordagem multidisciplinar.';
+            }
+          }
+          else if(hb>=7 && hb<=8 && soGeral){ veredito='APROFUNDAR'; motivo='Hb na zona borderline (7-8).'; detalhe='Avaliar contexto, prós e contras, via conservadora como alternativa.'; }
+          else if(hb>8){ veredito='NAO'; motivo='Hb>8, sem disóxia, sem hipoxemia, sem hipoperfusão, sem isquemia e sem sangramento ativo.'; detalhe='Não transfundir por Hb isolada. Tratar causa base e otimizar substratos.'; }
+          else { veredito='APROFUNDAR'; motivo='Caso a avaliar em contexto.'; detalhe='Revisar cenário, sintomas e dados de oxigenação.'; }
+        }
+      }
+    }
+  }
+
+  if(sangramento && sangramento!=='nao'){
+    var graus={0:'Ausente',1:'Menor',2:'Moderado',3:'Grave',4:'Debilitante/ameaçador'};
+    omsTexto='Grau '+oms+' — '+graus[oms];
+  }
+
+  var borderline=(hb>=6.5&&hb<=8)||(cirurgia==='sim')||(cList.length>0 && cList[0]!=='geral' && hb>=7 && hb<=8.5);
+  var faixa7_8 = hb>=7 && hb<8;
+  var semCriteriosObjetivos = !disoxia && !hipoxemia && !temHipoxia && !temDisfuncao && !isquemiaObj && sangramento!=='ativo' && !hdaAtiva;
+
+  if(limiar===undefined){ limiar=7; limiarNome='geral'; }
+  var criteriosObj = disoxia || hipoxemia || temHipoxia || temDisfuncao || isquemiaObj;
+  var desempateVerdadeiro = criteriosObj && hb < limiar && veredito === 'TRANSFUNDIR';
+
+  var pesoPbm = 50;
+  if(temFalc){ pesoPbm += 22; }
+  if(semCriteriosObjetivos){ pesoPbm += 15; }
+  if(faixa7_8){ pesoPbm += 8; }
+  if(hb >= 8 && !criteriosObj){ pesoPbm += 10; }
+  if(veredito === 'NAO'){ pesoPbm += 15; }
+  if(cronica && (temCarencial || vcm==='baixo' || vcm==='alto')){ pesoPbm += 6; }
+  if(criteriosObj){
+    if(desempateVerdadeiro){ pesoPbm -= 20; }
+    else if(hb >= limiar){ pesoPbm += 12; }
+    else { pesoPbm -= 5; }
+  }
+  if(disoxia){ pesoPbm -= 8; }
+  if(hipoxemia){ pesoPbm -= 6; }
+  if(temHipoxia){ pesoPbm -= 5; }
+  if(isquemiaObj){ pesoPbm -= 6; }
+  if(hb < 7){ pesoPbm -= 8; }
+  if(hdaAtiva || sangramento === 'ativo'){ pesoPbm -= 12; }
+  if(cirurgia === 'sim' && cirurgiaAdiavel === 'sim'){ pesoPbm += 10; }
+  if(cirurgia === 'sim' && cirurgiaAdiavel === 'nao'){ pesoPbm -= 5; }
+  if(hb < 5){ pesoPbm = Math.min(pesoPbm, 12); }
+  if((hdaAtiva || sangramento === 'ativo') && (oms >= 3 || estabilidade === 'instavel')){ pesoPbm = Math.min(pesoPbm, 20); }
+  if(temFalc && veredito !== 'TRANSFUNDIR'){ pesoPbm = Math.max(pesoPbm, 80); }
+  pesoPbm = Math.max(5, Math.min(95, pesoPbm));
+  var pesoTx = 100 - pesoPbm;
+
+  var inclinacao = 'equilibrada';
+  if(pesoPbm >= 62){ inclinacao = 'pende-pbm'; }
+  if(pesoPbm >= 78){ inclinacao = 'pende-pbm-forte'; }
+  if(pesoPbm <= 38){ inclinacao = 'pende-transfusao'; }
+  if(pesoPbm <= 22){ inclinacao = 'pende-transfusao-forte'; }
+
+  var msgBalanca;
+  var dirPbm = 'A balança pende para a via conservadora/PBM: otimizar substratos, tratar a causa base e reavaliar antes de considerar transfusão.';
+  var dirTx = 'A balança pende para a transfusão: critérios objetivos qualificam a indicação dentro do limiar.';
+  if(temFalc && veredito === 'TRANSFUNDIR'){
+    msgBalanca = 'Paciente falciforme com urgência (sangramento ativo grave/instabilidade): discutir IMEDIATAMENTE com hematologia/centro de referência e considerar transfusão de troca. ' + dirTx;
+  } else if(temFalc){
+    msgBalanca = 'Anemia falciforme: lógica transfusional própria — não transfundir por Hb isolada; discutir com hematologia/centro de referência. ' + dirPbm;
+  } else if(cirurgia === 'sim' && cirurgiaAdiavel === 'sim'){
+    msgBalanca = 'Cirurgia adiável: aplicar protocolo PBM pré-operatório (ferro ± eritropoietina + B12) e adiar 2–4 semanas. Transfundir apenas se inadiável ou se houver critérios objetivos abaixo do limiar. ' + dirPbm;
+  } else if(hb < 5){
+    msgBalanca = 'Anemia crítica (Hb < 5): risco iminente à vida — não há alternativa conservadora segura. ' + dirTx;
+  } else if((hdaAtiva || sangramento === 'ativo') && (oms >= 3 || estabilidade === 'instavel')){
+    msgBalanca = 'Sangramento ativo grave/instabilidade: transfusão em paralelo ao controle da fonte. ' + dirTx;
+  } else if(desempateVerdadeiro){
+    msgBalanca = 'Desempate verdadeiro: critérios objetivos presentes E Hb (' + hb + ' g/dL) abaixo do limiar do cenário (' + limiar + ' g/dL — ' + limiarNome + '). Transfundir 1 unidade + reavaliar (como opção). ' + dirTx;
+  } else if(criteriosObj && hb >= limiar){
+    msgBalanca = 'Há critérios objetivos, mas a Hb (' + hb + ' g/dL) está ACIMA do limiar deste cenário (' + limiar + ' g/dL — ' + limiarNome + '). Ainda há como melhorar a perfusão sem sangue: volume, vasopressor, inotrópico e tratar a causa base. Transfundir apenas se houver persistência/piora. ' + dirPbm;
+  } else if(veredito === 'TRANSFUNDIR' && hb < 7){
+    msgBalanca = 'Hb (' + hb + ' g/dL) abaixo do limiar (' + limiar + ' g/dL — ' + limiarNome + '): gatilho atingido. Transfusão como opção: 1 unidade + reavaliação, explorando a tolerância se estável.';
+  } else if(faixa7_8 && semCriteriosObjetivos){
+    msgBalanca = 'Faixa 7–8 sem critérios objetivos de disóxia: individualizar. Otimizar substratos (ferro/B12), tratar a causa base e reavaliar antes de considerar transfusão. ' + dirPbm;
+  } else if(veredito === 'NAO'){
+    msgBalanca = 'Sem critérios objetivos e Hb fora da zona de decisão ativa — não transfundir por Hb isolada. Otimizar a causa base. ' + dirPbm;
+  } else if(veredito === 'APROFUNDAR'){
+    msgBalanca = 'Caso borderline: pesar prós e contras com a skill. A via conservadora (tolerância à anemia, otimização) é alternativa viável e ética.';
+  } else {
+    msgBalanca = 'Equilíbrio entre as vias — individualizar com dados objetivos e discutir em equipe.';
+  }
+
+  var r=document.getElementById('resultado');
+  var classes={NAO:'nao',APROFUNDAR:'aprofundar',TRANSFUNDIR:'transfundir'};
+  var icones={NAO:'⛔ Não transfundir',APROFUNDAR:'🔍 Aprofundar análise',TRANSFUNDIR:'✅ Pode transfundir (opção)'};
+
+  var cRotulos=[];
+  for(var cj=0;cj<cList.length;cj++){ cRotulos.push(rotuloCenario(cList[cj])); }
+  var dRotulos=[];
+  for(var dj=0;dj<disf.length;dj++){ if(disf[dj]!=='nenhuma_d'){ dRotulos.push(rotuloDisfuncao(disf[dj])); } }
+  if(pamBaixa){ dRotulos.push('PAM calculada '+pam+' mmHg'); }
+  var eRotulos=[];
+  for(var ej=0;ej<ecg.length;ej++){ if(ecg[ej]!=='sem_ecg'){ eRotulos.push(rotuloECG(ecg[ej])); } }
+
+  var html='';
+
+  if(temFalc){
+    html+='<div class="alerta-falciforme"><strong>⚠️ ANEMIA FALCIFORME — CONDUTA ESPECIAL:</strong> Este caso NÃO segue os limiares gerais de Hb. A transfusão deve ser feita com extrema cautela pelos riscos de <strong>hiperhemólise</strong>, <strong>hiperviscosidade</strong> e <strong>AVC</strong>. Hb de base: '+getVal('hbBaseFalc')+' g/dL. <strong>Discutir com hematologia e/ou plantão do centro de referência</strong> antes de qualquer conduta. Transfusões inadvertidas aumentam significativamente os riscos de complicações e morte. SpO2 < 92% sugere síndrome torácica aguda.</div>';
+  }
+
+  if(borderline && veredito==='APROFUNDAR'){
+    html+='<div class="alerta-obrigatorio"><h4>⚠️ CASO BORDERLINE — ANÁLISE OBRIGATÓRIA PELA SKILL</h4>';
+    html+='<p><strong>Este veredito é um resumo rápido e NÃO é suficiente para a conduta definitiva.</strong> Casos borderline exigem análise completa e didática antes de qualquer decisão.</p>';
+    html+='<ul><li><strong>OBRIGATÓRIO:</strong> realizar a análise completa pelo prompt da skill <strong>#Decisão Transfusional – Hemácias</strong> — na Adapta ONE <strong>ou em qualquer outra IA de sua preferência</strong> (ChatGPT, Claude, Gemini etc.), pois o texto do prompt é de uso livre — antes da conduta definitiva.</li>';
+    html+='<li>A skill fornece: perguntas condicionais, prós e contras detalhados, impacto das omissões, abordagem multidisciplinar e texto de auditoria.</li>';
+    html+='<li>Não tratar este veredito rápido como decisão final em caso borderline.</li></ul>';
+    html+='<p style="margin-top:6px"><strong>Conduta:</strong> a transfusão PODE ser feita, mas não necessariamente DEVE. Discussão multidisciplinar recomendada antes da conduta definitiva.</p></div>';
+  }
+
+  html+='<div class="pbm-hero"><h4>🛡️ Conduta adequada no PBM</h4>';
+  html+='<p><strong>A ideia é evitar a transfusão sempre que possível.</strong> A transfusão é uma <strong>OPÇÃO</strong> ("pode transfundir"), nunca uma obrigação ("deve transfundir"), sempre que a segurança do paciente permitir. A via conservadora (tolerância à anemia, otimização de ferro/B12, tratamento da causa base) é sempre apresentada como alternativa viável e ética.</p>';
+  html+='<p class="pbm-alerta"><strong>Deixar de transfundir quando possível não altera e pode melhorar os desfechos para os pacientes, preservando recurso nobre para outros usos.</strong></p></div>';
+
+  if(confianca==='BAIXA'){
+    var partes=[];
+    if(faltando.length){ partes.push(faltando.join(', ') + ' ausente(s)'); }
+    if(soGeral){ partes.push('cenário clínico não definido'); }
+    var motivoFalta = partes.length ? partes.join(' e ') : 'informações objetivas incompletas';
+    html+='<div class="alerta"><strong>⚠️ ALERTA CRÍTICO:</strong> A conduta de transfundir NÃO pode ser considerada totalmente apropriada neste momento. A decisão está sendo tomada SEM informações objetivas completas — ' + motivoFalta + '. Transfundir com base apenas em Hb + contexto clínico é uma decisão NÃO subsidiada por dados objetivos, e este sistema NÃO a endossa como definitiva. Conduta provisória — confirmar/reverter após coleta.</div>';
+  }
+
+  if(faixa7_8 && semCriteriosObjetivos){
+    html+='<div class="faixa-warn"><strong>⚠️ Atenção:</strong> Hb entre 7–8 g/dL exige individualização do caso. Não foram caracterizados dados objetivos de disóxia (lactato, ScvO2/O2ER, sintomas de hipóxia, isquemia ou hipoperfusão). Nesta faixa, transfundir por Hb isolada <strong>não é rotineiramente indicado</strong> — otimizar substratos (ferro/B12), tratar a causa base e reavaliar. Transfundir apenas se surgirem critérios objetivos.</div>';
+  }
+
+  html+='<div class="veredito '+classes[veredito]+' secundario">';
+  html+='<h3>'+icones[veredito]+'</h3>';
+  html+='<div class="motivo">'+motivo+'</div>';
+  html+='<div class="detalhe">'+detalhe+'</div>';
+  if(opcao){ html+='<div class="opcao">'+opcao+'</div>'; }
+  html+='</div>';
+
+  html+='<div class="balanca '+inclinacao+'">';
+  html+='<div class="balanca-titulo">⚖️ A hipoperfusão <strong>qualifica</strong>, não cria a indicação</div>';
+  html+='<div class="balanca-sub">O prato que desce é o que pesa mais na decisão</div>';
+  html+='<div class="balanca-corpo">';
+  html+='<div class="prato prato-pbm"><div class="prato-rotulo">🟢 Via conservadora · PBM</div><ul><li>Ferro / B12</li><li>Volume</li><li>Vasopressor</li><li>Inotrópico</li><li>Tratar causa base</li><li>Tolerância à anemia</li></ul><div class="peso-bar"><div class="peso-fill" style="width:'+pesoPbm+'%"></div></div><div class="prato-peso">PBM: '+pesoPbm+'% do peso</div><div class="prato-msg">Pode elevar a perfusão sem sangue</div></div>';
+  html+='<div class="haste"></div>';
+  html+='<div class="fulcro"></div>';
+  html+='<div class="fulcro-base"></div>';
+  html+='<div class="prato prato-tx"><div class="prato-rotulo">🩸 Transfusão</div><ul><li>1 unidade de hemácias</li><li>+ reavaliação (single-unit)</li></ul><div class="peso-bar"><div class="peso-fill" style="width:'+pesoTx+'%"></div></div><div class="prato-peso">Transfusão: '+pesoTx+'% do peso</div><div class="prato-msg">Limiar + hipoperfusão persistente</div></div>';
+  html+='</div>';
+  html+='<div class="balanca-msg"><strong>Inclinação:</strong> '+msgBalanca+'</div>';
+  html+='</div>';
+
+  if(riscoTACO && (veredito==='TRANSFUNDIR'||veredito==='APROFUNDAR')){
+    html+='<div class="taco-warn"><strong>⚠️ RISCO DE TACO (sobrecarga circulatória associada à transfusão):</strong> '+(idoso?'Paciente idoso (≥70 anos). ':'')+(baixoPeso?'Baixo peso (<50 kg). ':'')+'Maior risco de complicações e sobrecarga volêmica. Infundir 1 unidade lentamente (ex.: 1–2 mL/kg/h ou conforme protocolo local), monitorizar sinais de congestão (dispneia, saturação, BCRP, balanço hídrico) e avaliar diurético profilático se indicado. Reavaliar após cada unidade antes de liberar outra.</div>';
+  }
+
+  html+='<div class="bloco"><h4>Resumo</h4>';
+  html+='<div class="linha"><span class="rotulo">Cenário(s)</span><span class="valor">'+cRotulos.join(', ')+'</span></div>';
+  html+='<div class="linha"><span class="rotulo">Hb atual</span><span class="valor">'+hb+' g/dL</span></div>';
+  if(temFalc && getVal('hbBaseFalc')){ html+='<div class="linha"><span class="rotulo">Hb de base (falciforme)</span><span class="valor">'+getVal('hbBaseFalc')+' g/dL</span></div>'; }
+  if(getVal('hbPrevia')){ html+='<div class="linha"><span class="rotulo">Hb prévia</span><span class="valor">'+getVal('hbPrevia')+' g/dL</span></div>'; }
+  html+='<div class="linha"><span class="rotulo">Tempo</span><span class="valor">'+tempo+'</span></div>';
+  if(idade!==null){ html+='<div class="linha"><span class="rotulo">Idade</span><span class="valor">'+idade+' anos'+(idoso?' (idoso)':'')+'</span></div>'; }
+  if(peso!==null){ html+='<div class="linha"><span class="rotulo">Peso</span><span class="valor">'+peso+' kg'+(baixoPeso?' (baixo peso)':'')+'</span></div>'; }
+  if(riscoTACO){ html+='<div class="linha"><span class="rotulo">Risco de TACO</span><span class="valor">SIM — idoso/baixo peso</span></div>'; }
+  if(pas!==null && pad!==null){ html+='<div class="linha"><span class="rotulo">PA</span><span class="valor">'+pas+'/'+pad+' mmHg</span></div>'; }
+  if(pam!==null){ html+='<div class="linha"><span class="rotulo">PAM (calculada)</span><span class="valor">'+pam+' mmHg'+(pamBaixa?' — hipoperfusão (<65)':'')+'</span></div>'; }
+  if(cirurgia==='sim'){ html+='<div class="linha"><span class="rotulo">Cirurgia em até 72h</span><span class="valor">'+(cirurgiaAdiavel==='sim'?'Adiável — otimização PBM':'Inadiável — otimização rápida')+'</span></div>'; }
+  if(temHda){ html+='<div class="linha"><span class="rotulo">HDA — atividade</span><span class="valor">'+(hdaAtividade==='ativa'?'Ativa (hematêmese/hematoquezia)':(hdaAtividade==='melena_cronica'?'Melena crônica':'Desconhecida'))+'</span></div>'; }
+  if(temHda && hdaEndoscopia){ html+='<div class="linha"><span class="rotulo">Endoscopia prevista</span><span class="valor">'+(hdaEndoscopia==='sim'?'Sim':'Não')+'</span></div>'; }
+  if(temChoqueSeptico){ html+='<div class="linha"><span class="rotulo">Tempo de choque séptico</span><span class="valor">'+(choqueTempo==='menos24'?'< 24h (agudo)':(choqueTempo==='mais24'?'≥ 24h':'Desconhecido'))+'</span></div>'; }
+  html+='<div class="linha"><span class="rotulo">Hipóxia</span><span class="valor">'+(temHipoxia?hip.join(', '):'ausente')+(hipoxemia?' · HIPOXEMIA':'')+'</span></div>';
+  html+='<div class="linha"><span class="rotulo">Hipoperfusão/disfunção</span><span class="valor">'+(temDisfuncao?dRotulos.join(', '):'ausente')+'</span></div>';
+  html+='<div class="linha"><span class="rotulo">Isquemia miocárdica</span><span class="valor">'+(isquemiaObj?(temECGIsquemia?eRotulos.join(', '):'sim'):'ausente')+'</span></div>';
+  if(spo2!==null){ html+='<div class="linha"><span class="rotulo">SpO2</span><span class="valor">'+spo2+'%'+(hipoxemia?' — hipoxemia (<'+limiarSpO2+'%)':'')+'</span></div>'; }
+  if(pao2!==null){ html+='<div class="linha"><span class="rotulo">PaO2</span><span class="valor">'+pao2+' mmHg'+(pao2<60?' — hipoxemia arterial':'')+'</span></div>'; }
+  if(pf!==null){ html+='<div class="linha"><span class="rotulo">P/F (PaO2/FiO2)</span><span class="valor">'+pf+(pfComprometido?' — comprometido (<300)':'')+'</span></div>'; }
+  if(o2erUsado!==null){ html+='<div class="linha"><span class="rotulo">O2ER</span><span class="valor">'+o2erUsado.toFixed(1)+'%'+(o2erCalc!==null?' (calculado — estimativa)':'')+'</span></div>'; }
+  if(omsTexto){ html+='<div class="linha"><span class="rotulo">OMS/WHO</span><span class="valor">'+omsTexto+'</span></div>'; }
+  html+='<div class="linha"><span class="rotulo">Estabilidade</span><span class="valor">'+(estabilidade||'não informada')+'</span></div>';
+  html+='<div class="linha"><span class="rotulo">Nível de confiança</span><span class="valor">'+confianca+'</span></div>';
+  html+='</div>';
+
+  if(cirurgia==='sim' && cirurgiaAdiavel==='sim'){
+    html+='<div class="bloco"><h4>Otimização pré-operatória (PBM)</h4><ul>';
+    html+='<li><strong>Avaliar ferro:</strong> ferritina, saturação de transferrina.</li>';
+    html+='<li><strong>Repor ferro:</strong> preferencialmente IV (ou oral se o tempo permitir).</li>';
+    html+='<li><strong>Eritropoietina (EPO):</strong> considerar se anemia de doença crônica ou renal.</li>';
+    html+='<li><strong>B12/Folato:</strong> corrigir se houver deficiência.</li>';
+    html+='<li><strong>Reavaliação:</strong> checar Hb antes do procedimento; adiar 2–4 semanas se possível.</li>';
+    html+='</ul></div>';
+  }
+
+  if(borderline && !temFalc){
+    html+='<div class="bloco"><h4>Análise borderline — prós e contras</h4><div class="pros-contras">';
+    html+='<div class="pros"><h5>✅ Prós de transfundir (opção)</h5><ul><li>Limiar AABB 2023 aplicável</li>';
+    if(cirurgia==='sim' && cirurgiaAdiavel==='nao'){ html+='<li>Cirurgia inadiável — otimização rápida</li>'; }
+    if(cirurgia==='sim' && cirurgiaAdiavel==='sim'){ html+='<li>Otimização pré-operatória com prazo curto</li>'; }
+    html+='<li>Risco isquêmico</li>';
+    if(idoso){ html+='<li>Idoso frágil — maior risco de complicações se não transfundido</li>'; }
+    if(hb<8){ html+='<li>Hb no limiar</li>'; }
+    if(hipoxemia){ html+='<li>Hipoxemia (SpO2<'+limiarSpO2+'% ou PaO2<60)</li>'; }
+    if(temDisfuncao){ html+='<li>Hipoperfusão/disfunção orgânica'+(pamBaixa?' (PAM '+pam+' mmHg)':'')+'</li>'; }
+    if(isquemiaObj){ html+='<li>Isquemia miocárdica (SCA)</li>'; }
+    html+='</ul></div>';
+    html+='<div class="contras"><h5>⚠️ Contras / via conservadora (PBM)</h5><ul><li>Risco de TACO (sobrecarga volêmica)</li>';
+    if(riscoTACO){ html+='<li>Risco aumentado de TACO (idoso/baixo peso)</li>'; }
+    html+='<li>Aloimunização e reações transfusionais</li><li>Não trata a causa base</li><li>Anemia crônica adaptada — tolerância pode ser explorada</li></ul></div></div>';
+    html+='<p style="margin-top:10px"><strong>Conduta mais defensável:</strong> A transfusão <strong>PODE</strong> ser feita, mas <strong>não necessariamente DEVE</strong>. Discussão multidisciplinar (hematologia, anestesiologia, cirurgia/ortopedia, cardiologia, gastroenterologia, infectologia conforme cenário) antes da conduta definitiva. Apresentar a via conservadora (tolerância à anemia, otimização de ferro/B12, tratamento da causa base) como alternativa viável e ética, estimulando a decisão ativa do paciente/responsável como maior interessado.</p>';
+    html+='<p class="nota"><strong>Gatilhos de reavaliação:</strong> sintomas de hipóxia, hipoxemia (SpO2<'+limiarSpO2+'% ou PaO2<60), hipoperfusão/disfunção orgânica (PAM < 65), isquemia miocárdica (ECG/troponina), instabilidade, sangramento ativo confirmado.</p></div>';
+  }
+
+  if(confianca==='BAIXA' && omissoes.length){
+    html+='<div class="bloco"><h4>Checklist de coleta</h4><ul>';
+    if(lactato===null){ html+='<li>Lactato (< 2 mmol/L)</li>'; }
+    if(scvo2===null){ html+='<li>ScvO2 (65–75%)</li>'; }
+    if(o2er===null && o2erCalc===null){ html+='<li>O2ER (< 30%) ou informar SpO2 + ScvO2 para cálculo</li>'; }
+    if(be===null){ html+='<li>BE (-2 a +2)</li>'; }
+    if(spo2===null){ html+='<li>SpO2 (hipoxemia se < '+limiarSpO2+'%)</li>'; }
+    if(pao2===null){ html+='<li>PaO2 arterial (< 60 mmHg = hipoxemia)</li>'; }
+    if(fio2===null && pao2!==null){ html+='<li>FiO2 (para calcular P/F)</li>'; }
+    if(!getVal('hbPrevia')){ html+='<li>Hb prévia (cinética) e tempo de instalação</li>'; }
+    if(isquemia==='desconhecido' && !temECGIsquemia){ html+='<li>Isquemia miocárdica (ECG — supra/infra de ST, inversão de onda T, novo bloqueio de ramo — e troponina)</li>'; }
+    html+='<li>Hipoperfusão (débito urinário, perfusão periférica, consciência, PAM, aminas)</li>';
+    if(pas===null || pad===null){ html+='<li>PAS/PAD (PAM — hipoperfusão se < 65 mmHg)</li>'; }
+    if(idade===null || peso===null){ html+='<li>Idade e peso (avaliação de risco de TACO — opcionais)</li>'; }
+    if(cirurgia==='sim' && cirurgiaAdiavel===null){ html+='<li>Cirurgia: definir se é adiável para otimização PBM</li>'; }
+    if(temHda && hdaAtividade==='desconhecida'){ html+='<li>HDA: atividade (hematêmese/hematoquezia vs melena crônica) e endoscopia prevista</li>'; }
+    if(temChoqueSeptico && choqueTempo==='desconhecido'){ html+='<li>Choque séptico: tempo de choque (< 24h / ≥ 24h) e foco infeccioso</li>'; }
+    if(sangramento==='ambiguo'){ html+='<li>Esclarecer atividade do sangramento (relato explícito?) e classificar OMS/WHO</li>'; }
+    html+='</ul><p class="nota"><strong>Impacto das omissões:</strong> sem lactato/ScvO2/O2ER/BE não se descarta disóxia — pode virar de não transfundir para transfundir. Sem SpO2/PaO2 não se identifica hipoxemia objetiva. Sem PA não se calcula PAM — hipoperfusão pode passar despercebida. Sem sinais de hipoperfusão (PAM, aminas, débito urinário) não se avalia disfunção orgânica. Sem ECG/troponina não se descarta isquemia miocárdica — pode subestimar a necessidade de transfusão (SCA não é restritivo). Sem idade/peso não se avalia risco de TACO. Sem saber se a cirurgia é adiável, perde-se a chance de otimização PBM pré-operatória. Sem atividade da HDA ou tempo de choque, a estratégia fica imprecisa. Sem Hb prévia não se avalia cinética. Sem cenário clínico é impossível aplicar limiar específico.</p></div>';
+  }
+
+  if(temHda){
+    html+='<div class="bloco"><h4>HDA — recomendações</h4><ul>';
+    html+='<li><strong>Restritivo:</strong> transfundir se Hb < 7, alvo 7–9 (Villanueva, NEJM 2013). NUNCA estratégia liberal.</li>';
+    html+='<li><strong>Ativa ou instável:</strong> transfundir + controle da fonte (endoscopia digestiva alta, hemodinâmica).</li>';
+    html+='<li><strong>Melena crônica:</strong> investigar ferropenia (VCM), repor ferro antes — não transfundir por Hb isolada.</li>';
+    html+='<li><strong>Cirrose associada:</strong> manter restritivo (risco de ressangramento varicoso e aumento da pressão portal).</li>';
+    html+='</ul></div>';
+  }
+
+  if(temSepse || temChoqueSeptico){
+    html+='<div class="bloco"><h4>Sepse / choque séptico — recomendações</h4><ul>';
+    html+='<li><strong>Sepse sem choque:</strong> restritivo — transfundir se Hb < 7.</li>';
+    html+='<li><strong>Choque séptico:</strong> transfundir se Hb < 7–8; com hipoperfusão (lactato elevado, ScvO2 baixo, hipotensão/PAM < 65/aminas) NÃO adicionar limiar permissivo (CHEST 2024/2025).</li>';
+    html+='<li><strong>Antes de decidir por Hb isolada:</strong> otimizar ressuscitação volêmica e metas de perfusão (lactato, débito urinário, PAM ≥ 65).</li>';
+    html+='</ul></div>';
+  }
+
+  if(isquemiaObj){
+    html+='<div class="bloco"><h4>Isquemia miocárdica / SCA — recomendações</h4><ul>';
+    html+='<li><strong>Não usar estratégia restritiva</strong> em SCA (IAM/angina instável) — transfundir se Hb < 8–9 ou sintomas isquêmicos (MINT).</li>';
+    html+='<li><strong>Alterações de ECG sugestivas:</strong> '+(temECGIsquemia?eRotulos.join(', '):'supra/infra de ST, inversão de onda T, novo bloqueio de ramo')+' — avaliar troponina e tratar a síndrome coronariana aguda.</li>';
+    html+='<li><strong>SpO2 < 92%</strong> reforça gravidade no cardiopata.</li>';
+    html+='</ul></div>';
+  }
+
+  if(temFalc){
+    html+='<div class="bloco"><h4>Recomendações específicas — anemia falciforme</h4><ul>';
+    html+='<li><strong>Hb de base:</strong> sempre conhecer o valor habitual do paciente antes de decidir.</li>';
+    html+='<li><strong>Alvo de Hb pós-transfusão:</strong> geralmente ≤ 10 g/dL — evitar hiperviscosidade e crise vaso-oclusiva.</li>';
+    html+='<li><strong>Hiperhemólise:</strong> risco de reação hemolítica tardia (DHTR) — evitar transfusão inadvertida.</li>';
+    html+='<li><strong>AVC agudo:</strong> se suspeita, a conduta é transfusão de troca, não transfusão simples.</li>';
+    html+='<li><strong>Síndrome torácica aguda:</strong> dor torácica, febre ou hipoxemia (SpO2<92%) — suspeitar e discutir com hematologia.</li>';
+    html+='<li><strong>Sequestro esplênico/hipotensão:</strong> disfunção orgânica ou hipotensão com Hb abaixo da base — discutir com hematologia.</li>';
+    html+='<li><strong>Indicações específicas:</strong> síndrome torácica aguda, AVC, pré-operatório, crise aplásica, priapismo — sempre com hematologia.</li>';
+    html+='<li><strong>Obrigatório:</strong> discutir com hematologia e/ou plantão do centro de referência do paciente.</li>';
+    html+='</ul></div>';
+  }
+
+  if(sangramento==='ambiguo' || (temHda && hdaAtividade==='desconhecida')){
+    html+='<div class="bloco"><h4>Pergunta condicional</h4><p>Há sangramento em atividade <strong>AGORA</strong>? Se sim, qual a gravidade OMS/WHO (grau 1-4)?'+(temHda?' Em HDA: há hematêmese/hematoquezia ativas? Endoscopia prevista?':'')+' Ausência de atividade muda a decisão: perda crônica → tratar causa/ferro, não transfundir por sangramento.</p></div>';
+  }
+
+  html+='<div class="bloco"><h4>Recomendação</h4><p><strong>Dose:</strong> 1 unidade por vez, com reavaliação (single-unit transfusion). Exceção: sangramento ativo com instabilidade. <strong>Na falciforme, preferir transfusão de troca em complicações agudas e manter Hb ≤ 10 g/dL. Na HDA, alvo 7–9 (nunca liberal). Na SCA/isquemia, não usar estratégia restritiva. Na cirurgia adiável, otimizar com protocolo PBM antes. No idoso/baixo peso, infusão lenta e monitorização de congestão (risco de TACO).</strong></p>';
+  html+='<p><strong>Abordagem multidisciplinar:</strong> '+(temFalc?'OBRIGATÓRIA — hematologia e/ou centro de referência do paciente falciforme antes de qualquer conduta.':(temHda?'gastroenterologia (endoscopia), cirurgia e hemodinâmica conforme atividade. ':'')+(temChoqueSeptico||temSepse?'infectologia/UTI (controle do foco e ressuscitação). ':'')+(temDisfuncao?'nefrologia/UTI conforme disfunção orgânica. ':'')+(isquemiaObj?'cardiologia (SCA). ':'')+(cirurgia==='sim'?'anestesiologia e cirurgia (definir adiabilidade). ':'')+(riscoTACO?'cardiologia/geriatria conforme risco de TACO. ':'')+'avaliar conforme cenário e gravidade.')+'</p>';
+  html+='<p><strong>Texto para indicação (auditoria):</strong> "Paciente com Hb '+hb+' g/dL, cenário(s) '+cRotulos.join(', ')+', '+(temHipoxia?'sintomas de hipóxia ('+hip.join(', ')+')':'sem sintomas de hipóxia')+(spo2!==null?' · SpO2 '+spo2+'% ('+(hipoxemia?'hipoxemia':'normal')+')':'')+(pao2!==null?' · PaO2 '+pao2+' mmHg':'')+(idade!==null?' · idade '+idade+' anos':'')+(peso!==null?' · peso '+peso+' kg':'')+(riscoTACO?' · risco de TACO':'')+(pam!==null?' · PAM '+pam+' mmHg'+(pamBaixa?' (hipoperfusão)':'')+'':'')+(temDisfuncao?' · hipoperfusão/disfunção ('+dRotulos.join(', ')+')':'')+(isquemiaObj?' · isquemia miocárdica ('+(temECGIsquemia?eRotulos.join(', '):'sim')+')':'')+(cirurgia==='sim'?' · cirurgia em até 72h '+(cirurgiaAdiavel==='sim'?'adiável (otimização PBM)':'inadiável'):'')+(temHda?' · HDA '+(hdaAtividade==='ativa'?'ativa':(hdaAtividade==='melena_cronica'?'crônica':'atividade desconhecida')):'')+(temChoqueSeptico?' · choque séptico '+(choqueTempo==='menos24'?'<24h':(choqueTempo==='mais24'?'≥24h':'tempo desconhecido')):'')+'. '+(omsTexto?'Sangramento '+omsTexto+'. ':'')+'Recomendação: '+icones[veredito]+' (conduta como opção, não obrigação)."</p></div>';
+
+  if(!(borderline && veredito==='APROFUNDAR')){
+    html+='<div class="sugestao-prompt">💡 <strong>Análise mais completa?</strong> Este veredito é um resumo rápido. Para qualificar melhor o raciocínio e a indicação — perguntas condicionais, nuances por cenário, prós e contras detalhados e checklist de coleta — use o prompt completo da skill <strong>#Decisão Transfusional – Hemácias</strong> na Adapta ONE <strong>ou em qualquer outra IA de sua preferência</strong> (ChatGPT, Claude, Gemini etc.).</div>';
+  }
+
+  html+='<div class="disclaimer">Este sistema é um subsídio à decisão clínica baseado em evidências (TRICC, CHEST 2024/2025, TRAIN, SAHARA, KDIGO, AABB/ICTMG, Villanueva, MINT). Não substitui o julgamento médico individualizado. A conduta transfusional é sempre uma opção ("pode"), nunca uma obrigação, quando a segurança do paciente permitir. Dados errados ou incompletos podem gerar indicações erradas. <strong>Na anemia falciforme, a decisão é sempre conjunta com a hematologia/centro de referência. Na HDA, a conduta é sempre restritiva (alvo 7–9). Na SCA/isquemia, não usar estratégia restritiva. Na cirurgia adiável, otimizar com protocolo PBM antes de transfundir. No idoso (≥70 anos) ou baixo peso (<50 kg), atenção ao risco de TACO. PAM < 65 mmHg é critério de hipoperfusão.</strong></div>';
+
+  r.innerHTML=html;
+  r.scrollIntoView();
+}
+
+function limpar(){
+  var els=document.querySelectorAll('input,select');
+  for(var i=0;i<els.length;i++){
+    var el=els[i];
+    if(el.type==='checkbox'||el.type==='radio'){ el.checked=false; }
+    else { el.value=''; }
+  }
+  document.getElementById('omsBlock').style.display='none';
+  document.getElementById('falciformeBlock').style.display='none';
+  document.getElementById('hdaBlock').style.display='none';
+  document.getElementById('choqueBlock').style.display='none';
+  document.getElementById('adiarBlock').style.display='none';
+  document.getElementById('resultado').innerHTML='';
+  marcarSelecao();
+}
+</script>
+</body>
+</html>
