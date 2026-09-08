@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Solicitação de Plasmaférese Terapêutica (TPE) - Doenças Raras</title>
+<style>
+  :root{
+    --azul:#0b4d8c; --azul-claro:#e8f1fa; --verde:#1e7e5a; --verde-claro:#e6f4ee;
+    --cinza:#f5f7fa; --borda:#d4dce6; --texto:#1f2d3d; --vermelho:#c0392b; --laranja:#b26a00;
+  }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:'Segoe UI',Arial,Helvetica,sans-serif; background:var(--cinza); color:var(--texto); line-height:1.5;}
+  .container{max-width:1000px; margin:0 auto; padding:20px;}
+  header{background:linear-gradient(135deg,var(--azul),#0a3d6e); color:#fff; padding:28px 24px; border-radius:10px 10px 0 0; position:relative;}
+  header h1{font-size:1.5rem; margin-bottom:6px;}
+  header p{font-size:.9rem; opacity:.9;}
+  .selo-status{position:absolute; top:20px; right:24px; padding:6px 14px; border-radius:20px; font-size:.8rem; font-weight:700; color:#fff;}
+  .selo-status.novo{background:#1e7e5a;}
+  .selo-status.importado{background:#0b4d8c;}
+  .selo-status.editado{background:#b26a00;}
+  .selo-status.finalizado{background:#4a5568;}
+  .selo-versao{position:absolute; top:58px; right:24px; padding:5px 14px; border-radius:20px; font-size:.78rem; font-weight:700; color:#0b4d8c; background:#fff; border:1px solid var(--borda);}
+  .selo-versao .data-versao{font-weight:400; font-size:.72rem; color:#6b7a8d;}
+  .lgpd{background:#fff7e6; border:1px solid #f0d9a8; color:#7a5c00; padding:10px 14px; border-radius:6px; font-size:.85rem; margin-top:12px;}
+  .card{background:#fff; border:1px solid var(--borda); border-radius:8px; padding:20px; margin-top:16px;}
+  .card h2{font-size:1.1rem; color:var(--azul); border-bottom:2px solid var(--azul-claro); padding-bottom:8px; margin-bottom:14px;}
+  h3.sub{font-size:.95rem; color:var(--verde); margin-top:14px; margin-bottom:8px;}
+  label{display:block; font-weight:600; font-size:.85rem; margin:10px 0 4px;}
+  input[type=text], input[type=number], input[type=date], select, textarea{
+    width:100%; padding:9px 11px; border:1px solid var(--borda); border-radius:6px; font-size:.92rem; background:#fff;
+  }
+  input:focus, select:focus, textarea:focus{outline:2px solid var(--azul); border-color:var(--azul);}
+  .grid2{display:grid; grid-template-columns:1fr 1fr; gap:14px;}
+  .grid3{display:grid; grid-template-columns:1fr 1fr 1fr; gap:14px;}
+  @media(max-width:700px){.grid2,.grid3{grid-template-columns:1fr;}}
+
+  .painel-criterios{display:flex; gap:14px; flex-wrap:wrap; margin-bottom:14px; padding:12px 14px; border:1px solid var(--borda); border-radius:8px; background:#fafcfe;}
+  .painel-criterios .bloco{flex:1; min-width:150px; text-align:center; padding:10px; border-radius:8px;}
+  .painel-criterios .bloco.pre{background:var(--verde-claro); border:1px solid #bcdccf;}
+  .painel-criterios .bloco.nao{background:#fdecea; border:1px solid #f2c4c0;}
+  .painel-criterios .bloco.status{background:#eef4fb; border:1px solid #c9ddf2;}
+  .painel-criterios .num{font-size:1.6rem; font-weight:700;}
+  .painel-criterios .lbl{font-size:.78rem; color:#6b7a8d;}
+  .painel-criterios .bloco.pre .num{color:var(--verde);}
+  .painel-criterios .bloco.nao .num{color:var(--vermelho);}
+  .painel-criterios .bloco.status .num{color:var(--azul); font-size:1.1rem;}
+  .alerta-criterios{margin-top:10px; padding:10px 14px; border-radius:6px; font-size:.85rem; display:none;}
+  .alerta-criterios.liberacao{background:var(--verde-claro); border:1px solid #bcdccf; color:var(--verde);}
+  .alerta-criterios.condicional{background:#fff3e0; border:1px solid #f0d9a8; color:var(--laranja);}
+  .alerta-criterios.aguardar{background:#fdecea; border:1px solid #f2c4c0; color:var(--vermelho);}
+
+  .exame-row{display:grid; grid-template-columns:120px 1fr; gap:10px; align-items:center; padding:10px; border-bottom:1px solid #eef2f6; background:#fff;}
+  .exame-row:nth-child(odd){background:#fafcfe;}
+  .exame-row .nome{font-weight:600; font-size:.88rem;}
+  .exame-row .simnao{display:flex; gap:8px; align-items:center;}
+  .exame-row .simnao label{font-weight:400; margin:0; display:flex; align-items:center; gap:4px; font-size:.85rem;}
+  .exame-row .resultado{display:flex; gap:8px; flex-wrap:wrap;}
+  .exame-row .resultado input[type=text]{flex:1; min-width:130px;}
+  .exame-row .resultado input[type=date]{width:150px;}
+  .exame-row .resultado textarea{flex:1; min-width:130px; min-height:34px; resize:vertical;}
+  .criterio{background:#fafcfe; border:1px solid #eef2f6; border-radius:6px; padding:10px 12px; margin-top:8px;}
+  .criterio .tit{font-weight:600; font-size:.88rem; margin-bottom:6px;}
+  .criterio .simnao{display:flex; gap:12px; align-items:center;}
+  .criterio .simnao label{font-weight:400; margin:0; display:flex; align-items:center; gap:4px; font-size:.85rem;}
+  .criterio textarea{margin-top:6px; min-height:34px; resize:vertical;}
+  .declaracao{background:#fafcfe; border:1px solid #eef2f6; border-radius:6px; padding:12px 14px; margin-top:12px; font-size:.88rem;}
+  .declaracao label{display:flex; align-items:flex-start; gap:8px; font-weight:400; margin:0; font-size:.85rem;}
+  .declaracao input[type=checkbox]{margin-top:2px; width:auto;}
+  .assinatura-reservada{background:#eef4fb; border:1px dashed var(--azul); border-radius:6px; padding:10px 14px; margin-top:10px; font-size:.82rem; color:var(--azul);}
+  .historico-box{background:#fafcfe; border:1px solid #eef2f6; border-radius:6px; padding:10px 14px; margin-top:10px; font-size:.85rem;}
+  .historico-box .item{border-bottom:1px solid #eef2f6; padding:4px 0;}
+  .historico-box .item:last-child{border-bottom:none;}
+  .btn{background:var(--azul); color:#fff; border:none; padding:12px 22px; border-radius:6px; font-size:.95rem; font-weight:600; cursor:pointer; margin-top:14px;}
+  .btn:hover{background:#0a3d6e;}
+  .btn.verde{background:var(--verde);}
+  .btn.verde:hover{background:#156a4a;}
+  .btn.cinza{background:#6b7a8d;}
+  .btn.cinza:hover{background:#55616f;}
+  .btn.laranja{background:var(--laranja);}
+  .btn.laranja:hover{background:#8f5500;}
+  .btn:disabled{background:#b9c4d0; cursor:not-allowed;}
+  .acoes{display:flex; gap:12px; flex-wrap:wrap;}
+  .texto-gerado{background:var(--verde-claro); border:1px solid #bcdccf; padding:16px; border-radius:6px; white-space:pre-wrap; font-size:.92rem; margin-top:14px; display:none;}
+  .aviso{font-size:.8rem; color:#6b7a8d; margin-top:6px;}
+  .aviso-exclusivo{background:#eef4fb; border:1px dashed var(--azul); padding:10px 14px; border-radius:6px; font-size:.85rem; color:var(--azul); margin-bottom:14px;}
+  .rodape-versao{margin-top:20px; padding:14px 20px; background:#fff; border:1px solid var(--borda); border-radius:0 0 8px 8px; font-size:.8rem; color:#6b7a8d; text-align:center;}
+  .modal-bg{display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,.5); z-index:1000; justify-content:center; align-items:center;}
+  .modal-bg.show{display:flex;}
+  .modal{background:#fff; border-radius:10px; max-width:560px; width:92%; padding:24px; box-shadow:0 10px 40px rgba(0,0,0,.3); max-height:85vh; overflow:auto;}
+  .modal h3{color:var(--azul); margin-bottom:12px;}
+  .modal .fechar{float:right; background:none; border:none; font-size:1.4rem; cursor:pointer; color:#6b7a8d;}
+  .modal table{width:100%; border-collapse:collapse; margin-top:10px;}
+  .modal td,.modal th{border:1px solid var(--borda); padding:8px; font-size:.88rem; text-align:left;}
+  .modal th{background:var(--azul-claro);}
+  .badge{display:inline-block; padding:2px 10px; border-radius:12px; font-size:.8rem; font-weight:700;}
+  .badge.catI{background:#e6f4ee; color:var(--verde);}
+  .badge.catII{background:#fff3e0; color:#b26a00;}
+  .travado{opacity:.7;}
+  .contador-acomp{font-size:.85rem; color:var(--azul); font-weight:600; margin-top:8px;}
+  .perfil-box{background:#fff; border:1px solid var(--borda); border-radius:8px; padding:16px 20px; margin-top:16px; display:flex; align-items:center; gap:16px; flex-wrap:wrap;}
+  .perfil-box label{font-weight:700; font-size:.9rem; margin:0; color:var(--azul);}
+  .perfil-box select{width:auto; min-width:220px;}
+  .perfil-aviso{flex:1; min-width:200px; font-size:.82rem; padding:8px 12px; border-radius:6px;}
+  .perfil-aviso.hospital{background:#eef4fb; border:1px solid #c9ddf2; color:var(--azul);}
+  .perfil-aviso.analista{background:var(--verde-claro); border:1px solid #bcdccf; color:var(--verde);}
+  @media print{
+    body{background:#fff;}
+    .card{break-inside:avoid; border:1px solid #ccc;}
+    .btn,.acoes,.lgpd,.painel-criterios,.alerta-criterios,.perfil-box{display:none;}
+    header{background:#0b4d8c !important; -webkit-print-color-adjust:exact;}
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <h1>Solicitação de Plasmaférese Terapêutica (TPE) — Doenças Raras</h1>
+    <p>Fundação Hemominas | Protocolo Estadual PTO-T.AHH.AFE-24 | Resolução SES/MG 11.011/2026 | ASFA 2023</p>
+    <div class="selo-status novo" id="seloStatus">Nova solicitação</div>
+    <div class="selo-versao" id="seloVersao">Versão 5.0 <span class="data-versao" id="dataVersao">| 18/08/2026</span></div>
+  </header>
+
+  <div class="lgpd">
+    <strong>Conformidade LGPD:</strong> Esta página trata apenas dados anonimizados. Não inclua nome, CPF, endereço ou qualquer dado que permita identificação direta do paciente.
+  </div>
+
+  <!-- PERFIL DE ACESSO -->
+  <div class="perfil-box">
+    <label for="perfil">Perfil de acesso</label>
+    <select id="perfil" onchange="mudarPerfil()">
+      <option value="hospital">🏥 Hospital (solicitante)</option>
+      <option value="analista">🔬 Analista (Hemominas)</option>
+    </select>
+    <div class="perfil-aviso hospital" id="perfilAviso">
+      Perfil Hospital: você preenche e exporta a solicitação. A análise (Seção 8) é exclusiva da Hemominas.
+    </div>
+  </div>
+
+  <!-- SEÇÃO 0: EXPORTAR / IMPORTAR -->
+  <div class="card">
+    <h2>0. Fluxo entre Serviços (3 versões)</h2>
+    <p class="aviso">
+      <strong>Versão original</strong> — preenchida no serviço (seções 1 a 7), exportada para a Hemominas. |
+      <strong>Versão Hemominas</strong> — aparece ao importar (seção 8 liberada para o analista). |
+      <strong>Versão finalizada</strong> — após "Finalizar e exportar resposta", o documento é travado e não aceita mais edições. Se necessário, inicie uma nova solicitação.
+    </p>
+    <div class="acoes">
+      <button class="btn verde" id="btnExportar" onclick="exportarSolicitacao()">Exportar solicitação (.json)</button>
+      <button class="btn cinza" id="btnImportar" onclick="document.getElementById('arquivoImport').click()">Importar solicitação</button>
+      <button class="btn cinza" id="btnNova" onclick="confirmarNovaSolicitacao()">Nova solicitação</button>
+      <button class="btn laranja" id="btnAcompanhamento" onclick="exportarAcompanhamento()">Exportar acompanhamento (.csv)</button>
+      <input type="file" id="arquivoImport" accept=".json,application/json" style="display:none;" onchange="importarSolicitacao(event)">
+    </div>
+    <div class="contador-acomp" id="contadorAcomp"></div>
+    <div id="resumoImportado" class="texto-gerado"></div>
+  </div>
+
+  <!-- SEÇÃO 1: HOSPITAL -->
+  <div class="card">
+    <h2>1. Identificação do Hospital Solicitante</h2>
+    <div class="grid3">
+      <div><label>CNES</label><input type="number" id="cnes" placeholder="Ex: 27014"></div>
+      <div><label>Nome do serviço</label><input type="text" id="servico" placeholder="Nome do hospital"></div>
+      <div><label>Município sede</label><input type="text" id="municipio" placeholder="Município"></div>
+    </div>
+    <p class="aviso">Centros Estaduais de Referência (CRP-DR): 27014 Santa Casa BH | 27049 HC-UFMG | 26948 Hospital Infantil João Paulo II | 2218798 HU-UFJF | 2127989 CHSL Pouso Alegre | 2206595 HC-UFTM Uberaba</p>
+  </div>
+
+  <!-- SEÇÃO 2: PACIENTE -->
+  <div class="card">
+    <h2>2. Dados Anonimizados do Paciente (LGPD)</h2>
+    <div class="grid3">
+      <div><label>Código único do procedimento</label><input type="text" id="codigoProcedimento" placeholder="TPE-Hospital-DD/MM/AAAA" readonly></div>
+      <div><label>Iniciais</label><input type="text" id="iniciais" maxlength="3" placeholder="Ex: J.S."></div>
+      <div>
+        <label>Faixa etária</label>
+        <select id="faixa">
+          <option value="">Selecione</option>
+          <option>&lt;18 anos</option><option>18-40</option><option>41-60</option><option>61-75</option><option>&gt;75</option>
+        </select>
+      </div>
+      <div>
+        <label>Sexo</label>
+        <select id="sexo"><option value="">Selecione</option><option>Feminino</option><option>Masculino</option><option>Outro</option></select>
+      </div>
+      <div><label>Peso (kg)</label><input type="number" id="peso" placeholder="Ex: 70"></div>
+      <div><label>Prontuário codificado</label><input type="text" id="prontuario" placeholder="Código interno"></div>
+      <div><label>Município de origem</label><input type="text" id="origem" placeholder="Município"></div>
+    </div>
+  </div>
+
+  <!-- SEÇÃO 3: DIAGNÓSTICO -->
+  <div class="card">
+    <h2>3. Seleção do Diagnóstico</h2>
+    <label>Diagnóstico (conforme Protocolo Estadual / ASFA)</label>
+    <select id="diagnostico">
+      <option value="">— Selecione o diagnóstico —</option>
+      <optgroup label="Hematológicas">
+        <option value="crio">Crioglobulinemia — Severa sintomática (Cat II, 2A, D89.1)</option>
+        <option value="hipervisc">Hiperviscosidade na hipergamaglobulinemia — Sintomática (Cat I, 1B, D89.2)</option>
+        <option value="matcomp">MAT mediada por complemento — Autoanticorpo anti-Fator H (Cat I, 2C, D69/D69.3)</option>
+        <option value="ptt">MAT — Púrpura Trombocitopênica Trombótica PTT (Cat I, 1A, D69/D69.3)</option>
+        <option value="mieloma">Mieloma Múltiplo — Nefropatia por cilindros (Cat II, 2B, C90/C90.0)</option>
+      </optgroup>
+      <optgroup label="Neurológicas">
+        <option value="em">Esclerose Múltipla — Ataque agudo/recaída (Cat II, 1A, G35)</option>
+        <option value="mg">Miastenia Gravis — Crise aguda (Cat I, 1B, G70.0)</option>
+        <option value="nmosd">Neuromielite óptica NMOSD — Ataque agudo/recaída (Cat II, 1B, G36.0)</option>
+        <option value="gbs">Síndrome de Guillain-Barré AIDP/GBS — Tratamento primário (Cat I, 1A, G61/G61.0)</option>
+        <option value="cidp">Polirradiculoneuropatia desmielinizante inflamatória crônica CIDP (Cat I, 1B, G61/G61.8/G61.9)</option>
+      </optgroup>
+      <optgroup label="Reumatológicas">
+        <option value="mbg">Doença anti-MBG (Goodpasture) — Hemorragia alveolar difusa / Independência de diálise (Cat I, 1C e 1B, M31.0/N08.5)</option>
+        <option value="caps">SAAF Catastrófica CAPS (Cat I, 2C, D68.6)</option>
+      </optgroup>
+    </select>
+  </div>
+
+  <!-- SEÇÃO 4: CHECKLIST -->
+  <div class="card">
+    <h2>4. Checklist de Exames Comprobatórios</h2>
+    <p class="aviso">A autorização é definida pelo percentual de critérios preenchidos (marcados como "Sim"), com data de realização e resultado: <strong>Liberação</strong> (100%), <strong>Condicional/Parcial</strong> (&gt;50%) ou <strong>Aguardar analista</strong> (≤50%).</p>
+
+    <div class="painel-criterios" id="painelCriterios" style="display:none;">
+      <div class="bloco pre">
+        <div class="num" id="numPre">0</div>
+        <div class="lbl">Critérios preenchidos (Sim)</div>
+      </div>
+      <div class="bloco nao">
+        <div class="num" id="numNao">0</div>
+        <div class="lbl">Critérios não preenchidos</div>
+      </div>
+      <div class="bloco status">
+        <div class="num" id="statusAutorizacao">—</div>
+        <div class="lbl">Nível de autorização</div>
+      </div>
+    </div>
+    <div class="alerta-criterios" id="alertaCriterios"></div>
+
+    <div id="checklist"><p class="aviso">Selecione um diagnóstico para exibir os exames exigidos pelo protocolo.</p></div>
+  </div>
+
+  <!-- SEÇÃO 5: INDICAÇÃO -->
+  <div class="card">
+    <h2>5. Indicação Médica (Justificativa)</h2>
+    <label>Justificativa detalhada (gravidade, falha terapêutica, tratamentos anteriores/associados, risco de vida/sequela, urgência)</label>
+    <textarea id="indicacao" rows="5" placeholder="Descreva a indicação clínica da TPE..."></textarea>
+  </div>
+
+  <!-- SEÇÃO 6: RESPONSÁVEL PELO PREENCHIMENTO -->
+  <div class="card">
+    <h2>6. Responsável pelo Preenchimento</h2>
+    <p class="aviso">Registra quem preencheu a solicitação e quando. Quando a página for hospedada, este bloco será integrado à validação de assinatura gov.br/ICP-Brasil.</p>
+    <div class="grid3">
+      <div><label>Nome completo</label><input type="text" id="respNome" placeholder="Nome do responsável"></div>
+      <div><label>Cargo / função</label><input type="text" id="respCargo" placeholder="Ex: Médico hematologista"></div>
+      <div><label>CRM ou registro profissional</label><input type="text" id="respCRM" placeholder="Ex: CRM-MG 00000"></div>
+    </div>
+    <div class="grid2">
+      <div><label>Data do preenchimento</label><input type="date" id="respData"></div>
+      <div><label>Hora do preenchimento</label><input type="time" id="respHora"></div>
+    </div>
+    <div class="declaracao">
+      <label>
+        <input type="checkbox" id="respDeclaracao">
+        <span><strong>Declaração de responsabilidade:</strong> Declaro que as informações prestadas nesta solicitação são verdadeiras e de minha responsabilidade, e que os exames comprobatórios anexados são autênticos e correspondem ao paciente em questão.</span>
+      </label>
+    </div>
+    <div class="assinatura-reservada">
+      <strong>Assinatura (campo reservado):</strong> quando esta página for hospedada no site da Hemominas/SES, este campo será substituído pela assinatura eletrônica validada via gov.br/ICP-Brasil. Na versão offline, a declaração de responsabilidade acima registra o responsável pelo preenchimento.
+    </div>
+  </div>
+
+  <!-- SEÇÃO 7: CONSOLIDAÇÃO -->
+  <div class="card">
+    <h2>7. Consolidação Automática — Texto da Solicitação</h2>
+    <div class="acoes">
+      <button class="btn verde" id="btnGerarTexto" onclick="gerarTexto()">Gerar texto consolidado</button>
+      <button class="btn cinza" id="btnCopiar" onclick="copiarTexto()" disabled>Copiar texto</button>
+    </div>
+    <div id="textoConsolidado" class="texto-gerado"></div>
+  </div>
+
+  <!-- SEÇÃO 8: AFE-404 (OCULTA ATÉ IMPORTAR + PERFIL ANALISTA) -->
+  <div class="card" id="cardAFE404" style="display:none;">
+    <h2>8. Análise da Fundação Hemominas — FPTO-T.AHH.AFE-404</h2>
+    <div class="aviso-exclusivo">
+      <strong>Exclusivo do analista da Fundação Hemominas.</strong> Esta seção fica oculta durante o preenchimento no serviço e é exibida após a importação da solicitação. Após "Finalizar e exportar resposta", o documento é bloqueado para edição.
+    </div>
+
+    <div class="grid3">
+      <div><label>Número do processo</label><input type="text" id="numProcesso" placeholder="Ex: TPE-2026-001"></div>
+      <div><label>Data da análise</label><input type="date" id="dataAnalise"></div>
+      <div><label>Nº de episódios da indicação eletrônica prévia (X)</label><input type="number" id="episodiosPrev" value="6" min="1" max="6"></div>
+    </div>
+
+    <h3 class="sub">Histórico / Versão do documento</h3>
+    <div class="historico-box" id="historicoBox">
+      <div class="item"><em>Nenhuma versão registrada ainda. Exporte a solicitação para registrar a versão inicial.</em></div>
+    </div>
+
+    <h3 class="sub">Checklist de liberação e auditoria — critérios manuais</h3>
+
+    <div class="criterio">
+      <div class="tit">Tratamento prévio ou concomitante adequado (se aplicável — ex.: corticoide, imunossupressor)</div>
+      <div class="simnao">
+        <label><input type="radio" name="cTrat" value="Sim" checked> Sim</label>
+        <label><input type="radio" name="cTrat" value="Não"> Não</label>
+      </div>
+      <textarea id="obsTrat" placeholder="Observações do analista"></textarea>
+    </div>
+
+    <div class="criterio">
+      <div class="tit">Gravidade da condição documentada (urgência, falha terapêutica, risco de vida/sequela)</div>
+      <div class="simnao">
+        <label><input type="radio" name="cGrav" value="Sim" checked> Sim</label>
+        <label><input type="radio" name="cGrav" value="Não"> Não</label>
+      </div>
+      <textarea id="obsGrav" placeholder="Observações do analista"></textarea>
+    </div>
+
+    <div class="criterio">
+      <div class="tit">TCLE (Termo de Consentimento Livre e Esclarecido) assinado e anexado</div>
+      <div class="simnao">
+        <label><input type="radio" name="cTCLE" value="Sim" checked> Sim</label>
+        <label><input type="radio" name="cTCLE" value="Não"> Não</label>
+      </div>
+    </div>
+
+    <h3 class="sub">Decisão da Fundação Hemominas</h3>
+    <div class="criterio">
+      <div class="simnao">
+        <label><input type="radio" name="decisao" value="APROVADO" checked> APROVADO</label>
+        <label><input type="radio" name="decisao" value="DEVOLVER"> DEVOLVER / SOLICITAR MAIS INFORMAÇÕES</label>
+        <label><input type="radio" name="decisao" value="INDEFERIDO"> INDEFERIDO</label>
+      </div>
+    </div>
+    <div class="grid2">
+      <div><label>Nº de sessões autorizadas (máx. 6 por solicitação)</label><input type="number" id="sessoesAut" value="6" min="1" max="6"></div>
+      <div><label>Motivo (devolução/indeferimento)</label><input type="text" id="motivoDec" placeholder="Preencher se DEVOLVER ou INDEFERIDO"></div>
+    </div>
+
+    <h3 class="sub">Assinatura do Analista</h3>
+    <div class="grid3">
+      <div><label>Nome completo</label><input type="text" id="analistaNome" placeholder="Nome do analista"></div>
+      <div><label>Cargo/ID</label><input type="text" id="analistaCargo" placeholder="Cargo/ID"></div>
+      <div><label>Data</label><input type="date" id="dataAssinatura"></div>
+    </div>
+
+    <div class="acoes">
+      <button class="btn verde" id="btnGerarAFE404" onclick="gerarAFE404()">Gerar FPTO-T.AHH.AFE-404</button>
+      <button class="btn cinza" id="btnCopiarAFE404" onclick="copiarAFE404()" disabled>Copiar AFE-404</button>
+      <button class="btn verde" id="btnFinalizar" onclick="finalizarResposta()">Finalizar e exportar resposta (.json)</button>
+    </div>
+    <div id="textoAFE404" class="texto-gerado"></div>
+  </div>
+
+  <div class="rodape-versao" id="rodapeVersao">
+    <strong>Versão 5.0</strong> — 18/08/2026. Este arquivo pode sofrer alterações. Confira sempre o número da versão no cabeçalho antes de utilizar. A Hemominas comunicará os responsáveis de cada serviço quando houver nova versão, até que esta página seja hospedada no site da Hemominas ou da Secretaria de Saúde.
+  </div>
+
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <button class="fechar" onclick="fecharModal()">&times;</button>
+    <h3>Grau de Evidência ASFA, Limites do Protocolo e Nível de Autorização</h3>
+    <div id="modalConteudo"></div>
+    <button class="btn verde" onclick="fecharModal()" style="margin-top:16px;">Entendi</button>
+  </div>
+</div>
+
+<script>
+// ===== VERSÃO DO FORMATO DE ARQUIVO =====
+var FORMATO_VERSAO = 5;
+var DATA_VERSAO = '18/08/2026';
+var historico = [];
+var estado = 'original'; // 'original' | 'importado' | 'finalizado'
+var perfilAtual = 'hospital'; // 'hospital' | 'analista'
+
+// ===== CHAVE DO ACOMPANHAMENTO (localStorage) =====
+var CHAVE_ACOMP = 'acompanhamento_tpe_hemominas';
+
+// ===== BASE DE DADOS DAS DOENÇAS =====
+const DOENCAS = {
+  crio:{nome:"Crioglobulinemia", area:"Hematológica", indicacao:"Severa sintomática", categoria:"II", grade:"2A", cid:"D89.1",
+    numSessoes:"3-5 iniciais (até 5-7)", solucao:"Albumina 5% (PFC se sangramento)",
+    exames:[
+      {n:"Crioglobulinas positivas (coleta/manuseio adequados - amostra aquecida)"},
+      {n:"Complemento baixo (C4)"},
+      {n:"Fator reumatoide (frequentemente positivo tipo II)"},
+      {n:"Função renal + EAS + proteinúria"},
+      {n:"Eletroneuromiografia (se neuropatia)"},
+      {n:"Avaliação cutânea (vasculite/úlceras) / doppler se isquemia"},
+      {n:"Hemograma, fibrinogênio, TP/RNI, TTPa (controle)"},
+      {n:"Cálcio (citrato), eletrólitos"}
+    ]},
+  hipervisc:{nome:"Hiperviscosidade na hipergamaglobulinemia", area:"Hematológica", indicacao:"Sintomática", categoria:"I", grade:"1B", cid:"D89.2",
+    numSessoes:"1-2 (repetir se recorrência)", solucao:"Albumina 5%",
+    exames:[
+      {n:"Eletroforese de proteínas séricas e imunofixação (paraproteína)"},
+      {n:"IgM/IgG/IgA quantitativas"},
+      {n:"Viscosidade sérica (se disponível)"},
+      {n:"Fundo de olho / avaliação oftalmológica (se queixa visual)"},
+      {n:"Plaquetas / coagulograma (se sangramento)"},
+      {n:"Hemograma, eletrólitos, cálcio (citrato)"}
+    ]},
+  matcomp:{nome:"MAT mediada por complemento (anti-Fator H)", area:"Hematológica", indicacao:"Autoanticorpo anti-Fator H", categoria:"I", grade:"2C", cid:"D69/D69.3",
+    numSessoes:"5-7 (diária inicial)", solucao:"PFC (prioridade)",
+    exames:[
+      {n:"Esquistócitos em lâmina periférica (evidência de MAT)"},
+      {n:"LDH elevado, haptoglobina baixa, bilirrubina indireta elevada"},
+      {n:"Plaquetopenia, anemia"},
+      {n:"Creatinina elevada / injúria renal + EAS"},
+      {n:"ADAMTS13 (atividade - para excluir PTT)"},
+      {n:"Anti-Fator H (título)"},
+      {n:"C3/C4 (consumo)"},
+      {n:"Painel genético/funcional do complemento (se disponível)"}
+    ]},
+  ptt:{nome:"Púrpura Trombocitopênica Trombótica (PTT)", area:"Hematológica", indicacao:"Tratamento primário", categoria:"I", grade:"1A", cid:"D69/D69.3",
+    numSessoes:"5-10+ (diária até remissão)", solucao:"PFC (obrigatório)",
+    exames:[
+      {n:"Plaquetopenia + anemia hemolítica microangiopática (esquizócitos, LDH elevado, haptoglobina diminuída)"},
+      {n:"ADAMTS13 (atividade muito baixa, tipicamente &lt;10%)"},
+      {n:"PLASMIC SCORE >= 6 (se ADAMTS13 não disponível imediatamente)"},
+      {n:"Exclusão de causas secundárias (infecção, drogas, gestação)"},
+      {n:"Hemograma com reticulócitos, LDH, creatinina (controle diário)"},
+      {n:"Cálcio, magnésio (citrato)"},
+      {n:"Coagulação e fibrinogênio (uso de plasma)"}
+    ]},
+  mieloma:{nome:"Mieloma Múltiplo - Nefropatia por cilindros", area:"Hematológica", indicacao:"Nefropatia (cast nephropathy)", categoria:"II", grade:"2B", cid:"C90/C90.0",
+    numSessoes:"5-7", solucao:"Albumina 5%",
+    exames:[
+      {n:"Cadeias leves séricas (FLC kappa/lambda) elevadas e relação alterada"},
+      {n:"Eletroforese / imunofixação"},
+      {n:"Creatinina elevada, IRA, EAS, proteinúria"},
+      {n:"Biópsia renal (quando realizada - confirma nefropatia por cilindros)"},
+      {n:"Cálcio, fósforo (controle)"},
+      {n:"Diferenciação de outras causas de IRA"}
+    ]},
+  em:{nome:"Esclerose Múltipla", area:"Neurológica", indicacao:"Ataque agudo/recaída", categoria:"II", grade:"1A", cid:"G35",
+    numSessoes:"5-7", solucao:"Albumina 5%",
+    exames:[
+      {n:"Diagnóstico de EM documentado (critérios clínico-radiológicos)"},
+      {n:"Evidência de surto (quadro neurológico novo/piora + avaliação neurológica)"},
+      {n:"RNM com atividade inflamatória (lesões realçando, quando disponível)"},
+      {n:"Documentação de corticoterapia em alta dose prévia (ou contraindicação)"},
+      {n:"Avaliação neurológica seriada (escala funcional/força/visão)"}
+    ]},
+  mg:{nome:"Miastenia Gravis", area:"Neurológica", indicacao:"Crise aguda", categoria:"I", grade:"1B", cid:"G70.0",
+    numSessoes:"4-6", solucao:"Albumina 5%",
+    exames:[
+      {n:"Anticorpos AChR e/ou MuSK (quando disponíveis)"},
+      {n:"Eletroneuromiografia compatível"},
+      {n:"Evidência de crise: sinais clínicos + parâmetros respiratórios (capacidade vital, NIF)"},
+      {n:"Necessidade de UTI/ventilação, disfagia grave"},
+      {n:"Monitorização respiratória seriada (capacidade vital, sinais de fadiga)"}
+    ]},
+  nmosd:{nome:"Neuromielite óptica (NMOSD)", area:"Neurológica", indicacao:"Ataque agudo/recaída", categoria:"II", grade:"1B", cid:"G36.0",
+    numSessoes:"5-7", solucao:"Albumina 5%",
+    exames:[
+      {n:"AQP4-IgG (quando disponível) e/ou critérios clínico-radiológicos"},
+      {n:"RNM de medula/órbitas (quando disponível)"},
+      {n:"Avaliação oftalmológica (acuidade visual/campo) quando neurite óptica"},
+      {n:"Documentação de corticoterapia em alta dose prévia (ou contraindicação)"},
+      {n:"Função visual/neurológica seriada"}
+    ]},
+  gbs:{nome:"Síndrome de Guillain-Barré (AIDP/GBS)", area:"Neurológica", indicacao:"Tratamento primário", categoria:"I", grade:"1A", cid:"G61/G61.0",
+    numSessoes:"4-5", solucao:"Albumina 5%",
+    exames:[
+      {n:"Quadro clínico típico + apoio por Líquor (dissociação albumino-citológica)"},
+      {n:"Eletroneuromiografia compatível"},
+      {n:"Avaliação de gravidade: progressão rápida, disautonomia, comprometimento respiratório"},
+      {n:"Documentação da escolha de TPE como terapia primária (ou motivo para não usar IVIG)"},
+      {n:"Monitorização respiratória (capacidade vital) e autonômica"}
+    ]},
+  cidp:{nome:"Polirradiculoneuropatia desmielinizante inflamatória crônica (CIDP)", area:"Neurológica", indicacao:"Tratamento", categoria:"I", grade:"1B", cid:"G61/G61.8/G61.9",
+    numSessoes:"3-5 (indução)", solucao:"Albumina 5%",
+    exames:[
+      {n:"Critérios clínicos + eletroneuromiografia compatível"},
+      {n:"Exclusão de mimetizadores (avaliação neurológica)"},
+      {n:"Documentação de falha/resposta parcial/contraindicação a corticoide ou IVIG"},
+      {n:"Plano de manutenção e reabilitação"},
+      {n:"Avaliação funcional/força seriada; escalas neurológicas"}
+    ]},
+  mbg:{nome:"Doença anti-MBG (Goodpasture)", area:"Reumatológica", indicacao:"Hemorragia alveolar difusa / Independência de diálise", categoria:"I", grade:"1C e 1B", cid:"M31.0/N08.5",
+    numSessoes:"10-14", solucao:"Albumina 5% (PFC se sangramento)",
+    exames:[
+      {n:"Anti-MBG positivo (título)"},
+      {n:"Evidência de acometimento pulmonar: clínica + imagem; queda de Hb; broncoscopia se aplicável"},
+      {n:"Evidência de acometimento renal: creatinina, EAS, proteinúria/hematúria; biópsia renal (crescentes, deposição linear IgG)"},
+      {n:"ANCA (avaliar coexistência)"},
+      {n:"Documentação de terapia padrão concomitante (corticoide alta dose, ciclofosfamida)"},
+      {n:"Hb, gasometria/oxigenação, sinais de sangramento (controle)"}
+    ]},
+  caps:{nome:"SAAF Catastrófica (CAPS)", area:"Reumatológica", indicacao:"Tratamento", categoria:"I", grade:"2C", cid:"D68.6",
+    numSessoes:"3-5 (inicial)", solucao:"PFC (frequente)",
+    exames:[
+      {n:"Critérios clínicos de CAPS (trombose multissistêmica aguda)"},
+      {n:"Lúpus anticoagulante, anticardiolipina IgG/IgM, anti-beta2GP1"},
+      {n:"Evidência de acometimento de órgãos (imagem, marcadores, clínica)"},
+      {n:"Diferenciação de MAT/PTT (plaquetas, hemólise, ADAMTS13)"},
+      {n:"Hemostasia: plaquetas, TP/INR, TTPa, fibrinogênio, D-dímero"}
+    ]}
+};
+
+// ===== CNES DE REFERÊNCIA =====
+const CNES_REF = {
+  "27014":{s:"Santa Casa de Belo Horizonte", m:"Belo Horizonte"},
+  "27049":{s:"Hospital das Clínicas da UFMG / EBSERH", m:"Belo Horizonte"},
+  "26948":{s:"Hospital Infantil João Paulo II / FHEMIG", m:"Belo Horizonte"},
+  "2218798":{s:"Hospital Universitário da UFJF / EBSERH (HUUFJF)", m:"Juiz de Fora"},
+  "2127989":{s:"Complexo Hospitalar Samuel Libânio (CHSL)", m:"Pouso Alegre"},
+  "2206595":{s:"Hospital de Clínicas da UF do Triângulo Mineiro (UFTM)", m:"Uberaba"}
+};
+
+// ===== PERFIL DE ACESSO =====
+function mudarPerfil(){
+  perfilAtual = document.getElementById('perfil').value;
+  var aviso = document.getElementById('perfilAviso');
+  if(perfilAtual === 'analista'){
+    aviso.className = 'perfil-aviso analista';
+    aviso.textContent = 'Perfil Analista: você pode importar, analisar e finalizar a resposta (Seção 8).';
+  } else {
+    aviso.className = 'perfil-aviso hospital';
+    aviso.textContent = 'Perfil Hospital: você preenche e exporta a solicitação. A análise (Seção 8) é exclusiva da Hemominas.';
+  }
+  atualizarVisibilidadeAFE404();
+}
+function atualizarVisibilidadeAFE404(){
+  var card = document.getElementById('cardAFE404');
+  // Só mostra a Seção 8 se o perfil for analista E o documento estiver importado/finalizado
+  if(perfilAtual === 'analista' && (estado === 'importado' || estado === 'finalizado')){
+    card.style.display = 'block';
+  } else {
+    card.style.display = 'none';
+  }
+}
+
+// ===== UTILITÁRIOS =====
+function pegarHospital(){
+  return {
+    cnes: document.getElementById('cnes').value.trim(),
+    servico: document.getElementById('servico').value.trim(),
+    municipio: document.getElementById('municipio').value.trim()
+  };
+}
+function pegarPaciente(){
+  return {
+    codigoProcedimento: document.getElementById('codigoProcedimento').value.trim(),
+    iniciais: document.getElementById('iniciais').value.trim(),
+    faixa: document.getElementById('faixa').value,
+    sexo: document.getElementById('sexo').value,
+    peso: document.getElementById('peso').value.trim(),
+    pront: document.getElementById('prontuario').value.trim(),
+    origem: document.getElementById('origem').value.trim()
+  };
+}
+function pegarResponsavel(){
+  return {
+    nome: document.getElementById('respNome').value.trim(),
+    cargo: document.getElementById('respCargo').value.trim(),
+    crm: document.getElementById('respCRM').value.trim(),
+    data: document.getElementById('respData').value,
+    hora: document.getElementById('respHora').value,
+    declaracao: document.getElementById('respDeclaracao').checked
+  };
+}
+function pegarExames(){
+  var key = document.getElementById('diagnostico').value;
+  var d = DOENCAS[key];
+  if(!d) return [];
+  var lista = [];
+  for(var i=0;i<d.exames.length;i++){
+    var sel = document.querySelector('input[name="ex_'+i+'"]:checked');
+    lista.push({
+      nome: d.exames[i].n,
+      status: sel ? sel.value : '',
+      resultado: document.getElementById('res_'+i).value.trim(),
+      data: document.getElementById('data_'+i).value,
+      observacao: document.getElementById('obs_'+i).value.trim()
+    });
+  }
+  return lista;
+}
+function pegarExamesSim(){
+  return pegarExames().filter(function(e){ return e.status === 'Sim'; });
+}
+function fmtData(iso){
+  if(!iso) return '';
+  var p = iso.split('-');
+  return (p.length===3) ? p[2]+'/'+p[1]+'/'+p[0] : iso;
+}
+function marcar(sim){
+  return sim === 'Sim' ? '[ X ]' : '[   ]';
+}
+function setSeloStatus(tipo, texto){
+  var selo = document.getElementById('seloStatus');
+  selo.className = 'selo-status ' + tipo;
+  selo.textContent = texto;
+}
+function setVal(id, v){
+  var el = document.getElementById(id);
+  if(el) el.value = v;
+}
+function setEstado(novo){
+  estado = novo;
+  if(novo === 'original'){
+    setSeloStatus('novo', 'Nova solicitação');
+  } else if(novo === 'importado'){
+    setSeloStatus('importado', 'Importado');
+  } else if(novo === 'finalizado'){
+    setSeloStatus('finalizado', 'Finalizado');
+  }
+  atualizarVisibilidadeAFE404();
+}
+
+// ===== TRAVAR / DESTRAVAR FORMULÁRIO =====
+function travarFormulario(){
+  document.querySelectorAll('.card input, .card select, .card textarea').forEach(function(el){
+    el.disabled = true;
+  });
+  ['btnExportar','btnImportar','btnGerarTexto','btnGerarAFE404','btnFinalizar'].forEach(function(id){
+    var b = document.getElementById(id);
+    if(b) b.disabled = true;
+  });
+  document.body.classList.add('travado');
+}
+function destravarFormulario(){
+  document.querySelectorAll('.card input, .card select, .card textarea').forEach(function(el){
+    el.disabled = false;
+  });
+  ['btnExportar','btnImportar','btnGerarTexto','btnGerarAFE404','btnFinalizar'].forEach(function(id){
+    var b = document.getElementById(id);
+    if(b) b.disabled = false;
+  });
+  document.body.classList.remove('travado');
+}
+
+// ===== LÓGICA DE AUTORIZAÇÃO (PERCENTUAL) =====
+function calcularAutorizacao(){
+  var key = document.getElementById('diagnostico').value;
+  var d = key ? DOENCAS[key] : null;
+  if(!d) return {pre:0, total:0, percentual:0, status:'', rotulo:''};
+  var pre = pegarExamesSim().length;
+  var total = d.exames.length;
+  var percentual = total > 0 ? Math.round((pre/total)*100) : 0;
+  var status, rotulo;
+  if(pre === total){
+    status = 'liberacao'; rotulo = 'LIBERAÇÃO';
+  } else if(percentual > 50){
+    status = 'condicional'; rotulo = 'CONDICIONAL / PARCIAL';
+  } else {
+    status = 'aguardar'; rotulo = 'AGUARDAR ANALISTA';
+  }
+  return {pre:pre, total:total, percentual:percentual, status:status, rotulo:rotulo};
+}
+
+// ===== CÓDIGO ÚNICO DO PROCEDIMENTO =====
+function gerarCodigoProcedimento(){
+  var servico = document.getElementById('servico').value.trim();
+  var agora = new Date();
+  var dd = ('0'+agora.getDate()).slice(-2);
+  var mm = ('0'+(agora.getMonth()+1)).slice(-2);
+  var aaaa = agora.getFullYear();
+  var nome = servico ? servico.replace(/\s+/g,'').toUpperCase() : 'HOSPITAL';
+  var codigo = 'TPE-' + nome + '-' + dd + '/' + mm + '/' + aaaa;
+  document.getElementById('codigoProcedimento').value = codigo;
+  return codigo;
+}
+document.getElementById('servico').addEventListener('input', function(){
+  if(document.getElementById('servico').value.trim()) gerarCodigoProcedimento();
+});
+
+// ===== AUTOCONCLUIR CNES =====
+document.getElementById('cnes').addEventListener('input', function(){
+  var v = this.value.trim();
+  if(CNES_REF[v]){
+    document.getElementById('servico').value = CNES_REF[v].s;
+    document.getElementById('municipio').value = CNES_REF[v].m;
+    gerarCodigoProcedimento();
+  }
+});
+
+// ===== RENDERIZAR CHECKLIST =====
+document.getElementById('diagnostico').addEventListener('change', function(){
+  var key = this.value;
+  var box = document.getElementById('checklist');
+  document.getElementById('painelCriterios').style.display = 'none';
+  document.getElementById('alertaCriterios').style.display = 'none';
+  if(!key){ box.innerHTML = '<p class="aviso">Selecione um diagnóstico para exibir os exames exigidos pelo protocolo.</p>'; return; }
+  var d = DOENCAS[key];
+  var html = '<p class="aviso"><strong>'+d.nome+'</strong> — '+d.indicacao+' | Categoria '+d.categoria+', Grade '+d.grade+' | CID '+d.cid+'</p>';
+  d.exames.forEach(function(ex, i){
+    html += '<div class="exame-row">'+
+      '<div class="nome">'+(i+1)+'. '+ex.n+'</div>'+
+      '<div>'+
+        '<div class="simnao">'+
+          '<label><input type="radio" name="ex_'+i+'" value="Sim" onchange="atualizarResultado('+i+')"> Sim</label>'+
+          '<label><input type="radio" name="ex_'+i+'" value="Não" onchange="atualizarResultado('+i+')"> Não</label>'+
+        '</div>'+
+        '<div class="resultado">'+
+          '<input type="text" id="res_'+i+'" placeholder="Resultado" disabled>'+
+          '<input type="date" id="data_'+i+'" disabled>'+
+          '<textarea id="obs_'+i+'" placeholder="Observação do solicitante" rows="1"></textarea>'+
+        '</div>'+
+      '</div>'+
+    '</div>';
+  });
+  box.innerHTML = html;
+  document.getElementById('painelCriterios').style.display = 'flex';
+  atualizarContador();
+});
+
+function atualizarResultado(i){
+  var sim = document.querySelector('input[name="ex_'+i+'"]:checked');
+  var res = document.getElementById('res_'+i);
+  var data = document.getElementById('data_'+i);
+  var habilitar = !!(sim && sim.value === 'Sim');
+  res.disabled = !habilitar;
+  data.disabled = !habilitar;
+  if(!habilitar){ res.value=''; data.value=''; }
+  atualizarContador();
+}
+
+// ===== CONTADOR DE CRITÉRIOS + NÍVEL DE AUTORIZAÇÃO =====
+function atualizarContador(){
+  var key = document.getElementById('diagnostico').value;
+  var painel = document.getElementById('painelCriterios');
+  var alerta = document.getElementById('alertaCriterios');
+  if(!key || !DOENCAS[key]){ painel.style.display='none'; alerta.style.display='none'; return; }
+  var d = DOENCAS[key];
+  var aut = calcularAutorizacao();
+  var nao = d.exames.length - aut.pre;
+  document.getElementById('numPre').textContent = aut.pre;
+  document.getElementById('numNao').textContent = nao;
+  document.getElementById('statusAutorizacao').textContent = aut.rotulo;
+  painel.style.display = 'flex';
+
+  if(aut.status === 'liberacao'){
+    alerta.className = 'alerta-criterios liberacao';
+    alerta.innerHTML = '<strong>LIBERAÇÃO ('+aut.percentual+'% — todos os '+aut.total+' critérios preenchidos).</strong> Caracterização completa. Encaminhe os exames comprobatórios anexados à Fundação Hemominas (plasmaferese@hemominas.mg.gov.br) para análise.';
+  } else if(aut.status === 'condicional'){
+    alerta.className = 'alerta-criterios condicional';
+    alerta.innerHTML = '<strong>CONDICIONAL / PARCIAL ('+aut.percentual+'% — '+aut.pre+' de '+aut.total+' critérios).</strong> Autorização parcial. A liberação definitiva fica condicionada à avaliação do analista da Hemominas. Encaminhe os exames anexados.';
+  } else {
+    alerta.className = 'alerta-criterios aguardar';
+    alerta.innerHTML = '<strong>AGUARDAR ANALISTA ('+aut.percentual+'% — '+aut.pre+' de '+aut.total+' critérios).</strong> Caracterização insuficiente. A solicitação deve aguardar avaliação do analista da Fundação Hemominas antes de qualquer liberação.';
+  }
+  alerta.style.display = 'block';
+}
+
+// ===== VALIDAÇÃO DO RESPONSÁVEL =====
+function validarResponsavel(){
+  var r = pegarResponsavel();
+  if(!r.nome){ alert('Informe o nome do responsável pelo preenchimento.'); return false; }
+  if(!r.declaracao){ alert('Marque a declaração de responsabilidade para prosseguir.'); return false; }
+  return true;
+}
+
+// ===== HISTÓRICO =====
+function registrarHistorico(descricao, origem){
+  var agora = new Date();
+  var versao = (historico.length + 1) + '.0';
+  historico.push({ versao: versao, data: agora.toISOString(), descricao: descricao, origem: origem || 'solicitante' });
+  renderizarHistorico();
+}
+function renderizarHistorico(){
+  var box = document.getElementById('historicoBox');
+  if(historico.length === 0){
+    box.innerHTML = '<div class="item"><em>Nenhuma versão registrada ainda. Exporte a solicitação para registrar a versão inicial.</em></div>';
+    return;
+  }
+  var html = '';
+  historico.slice().reverse().forEach(function(item){
+    html += '<div class="item"><strong>v'+item.versao+'</strong> — '+fmtData(item.data.slice(0,10))+' '+item.data.slice(11,16)+' ('+(item.origem==='analista'?'Hemominas':'Hospital')+') — '+item.descricao+'</div>';
+  });
+  box.innerHTML = html;
+}
+
+// ===== RESUMO LEGÍVEL =====
+function gerarResumo(){
+  var key = document.getElementById('diagnostico').value;
+  var d = key ? DOENCAS[key] : null;
+  var h = pegarHospital(), p = pegarPaciente(), r = pegarResponsavel();
+  var examesSim = pegarExamesSim();
+  var aut = calcularAutorizacao();
+  var linhas = [];
+  linhas.push('RESUMO DA SOLICITAÇÃO DE PLASMAFÉRESE TERAPÊUTICA (TPE)');
+  linhas.push('Código do procedimento: ' + (p.codigoProcedimento||'[não gerado]'));
+  linhas.push('Formato de arquivo: versão ' + FORMATO_VERSAO + ' (' + DATA_VERSAO + ')');
+  linhas.push('Gerado em: ' + new Date().toLocaleString('pt-BR'));
+  linhas.push('');
+  linhas.push('Hospital solicitante: ' + (h.servico||'[não informado]') + (h.cnes?', CNES '+h.cnes:'') + (h.municipio?', '+h.municipio:''));
+  linhas.push('Paciente (anonimizado): ' + (p.iniciais||'[iniciais]') + (p.faixa?', '+p.faixa:'') + (p.sexo?', '+p.sexo:'') + (p.peso?', '+p.peso+' kg':'') + (p.origem?', origem '+p.origem:''));
+  if(d){
+    linhas.push('Diagnóstico: ' + d.nome + ' — ' + d.indicacao + ' | CID ' + d.cid + ' | Categoria ' + d.categoria + ' | Grade ' + d.grade);
+  } else {
+    linhas.push('Diagnóstico: [não selecionado]');
+  }
+  linhas.push('Critérios preenchidos: ' + aut.pre + ' de ' + aut.total + ' (' + aut.percentual + '%)');
+  linhas.push('Nível de autorização: ' + aut.rotulo);
+  if(examesSim.length > 0){
+    linhas.push('Exames comprobatórios:');
+    examesSim.forEach(function(e){
+      var txt = '  - ' + e.nome;
+      if(e.data) txt += ' (realizado em ' + fmtData(e.data) + ')';
+      if(e.resultado) txt += ' — resultado: ' + e.resultado;
+      if(e.observacao) txt += ' — obs: ' + e.observacao;
+      linhas.push(txt);
+    });
+  }
+  var indicacao = document.getElementById('indicacao').value.trim();
+  if(indicacao) linhas.push('Indicação clínica: ' + indicacao);
+  if(d){
+    linhas.push('Sessões recomendadas: ' + d.numSessoes + ' | Reposição: ' + d.solucao + ' | Máx. por solicitação: 6');
+  }
+  linhas.push('');
+  linhas.push('Responsável pelo preenchimento: ' + (r.nome||'[não informado]') + (r.cargo?', '+r.cargo:'') + (r.crm?', '+r.crm:'') + (r.data?', em '+fmtData(r.data):'') + (r.hora?', às '+r.hora:''));
+  linhas.push('Declaração de responsabilidade: ' + (r.declaracao ? 'CONFIRMADA' : 'NÃO CONFIRMADA'));
+  linhas.push('');
+  linhas.push('Indicação sujeita à confirmação do analista da Fundação Hemominas (FPTO-T.AHH.AFE-404).');
+  return linhas.join('\n');
+}
+
+// ===== MONTAR DADOS + BAIXAR JSON =====
+function montarDados(estadoArquivo, respostaAfe){
+  var aut = calcularAutorizacao();
+  var dados = {
+    formato: 'solicitacao_tpe_hemominas',
+    versao: FORMATO_VERSAO,
+    dataVersao: DATA_VERSAO,
+    estado: estadoArquivo,
+    codigoProcedimento: document.getElementById('codigoProcedimento').value.trim() || gerarCodigoProcedimento(),
+    autorizacao: { status: aut.status, rotulo: aut.rotulo, preenchidos: aut.pre, total: aut.total, percentual: aut.percentual },
+    historico: historico,
+    geradoEm: new Date().toISOString(),
+    hospital: pegarHospital(),
+    paciente: pegarPaciente(),
+    responsavel: pegarResponsavel(),
+    diagnostico: document.getElementById('diagnostico').value,
+    exames: pegarExames(),
+    indicacao: document.getElementById('indicacao').value.trim(),
+    resumoLegivel: gerarResumo()
+  };
+  if(respostaAfe) dados.respostaAFE404 = respostaAfe;
+  return dados;
+}
+function baixarJSON(dados){
+  var blob = new Blob([JSON.stringify(dados, null, 2)], {type:'application/json'});
+  var a = document.createElement('a');
+  var sufixo = dados.estado === 'finalizado' ? '_FINAL' : '';
+  var nomeArquivo = 'solicitacao_tpe_' + (dados.paciente.iniciais||'anonimo').replace(/\W/g,'') + '_' + new Date().toISOString().slice(0,10) + sufixo + '.json';
+  a.href = URL.createObjectURL(blob);
+  a.download = nomeArquivo;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+}
+
+// ===== EXPORTAR (VERSÃO ORIGINAL) =====
+function exportarSolicitacao(){
+  if(estado === 'finalizado'){ alert('Documento finalizado. Não é possível exportar novamente.'); return; }
+  var key = document.getElementById('diagnostico').value;
+  if(!key){ alert('Selecione o diagnóstico antes de exportar.'); return; }
+  var aut = calcularAutorizacao();
+  if(aut.pre === 0){ alert('Marque ao menos um critério como "Sim" para exportar.'); return; }
+  if(!validarResponsavel()) return;
+
+  var codigo = gerarCodigoProcedimento();
+  registrarHistorico('Exportação da versão original pelo serviço (nível: ' + aut.rotulo + ')', 'solicitante');
+
+  baixarJSON(montarDados('original'));
+  setSeloStatus('editado', 'Exportado');
+  alert('Versão original exportada com código ' + codigo + '. Nível de autorização: ' + aut.rotulo + ' (' + aut.percentual + '%). Envie o arquivo anexado ao e-mail oficial (plasmaferese@hemominas.mg.gov.br).');
+}
+
+// ===== IMPORTAR (VERSÃO HEMOMINAS) =====
+function importarSolicitacao(event){
+  var file = event.target.files[0];
+  if(!file) return;
+  var reader = new FileReader();
+  reader.onload = function(e){
+    try {
+      var dados = JSON.parse(e.target.result);
+      if(dados.formato && dados.formato !== 'solicitacao_tpe_hemominas'){
+        alert('Arquivo não reconhecido como solicitação de TPE Hemominas.'); return;
+      }
+      var versao = dados.versao || 1;
+      if(versao > FORMATO_VERSAO){
+        alert('Este arquivo foi gerado por uma versão mais nova (v'+versao+'). Esta página é v'+FORMATO_VERSAO+'. Alguns campos podem não ser importados. Recomenda-se atualizar a página.');
+      }
+      var h = dados.hospital || {};
+      setVal('cnes', h.cnes || '');
+      setVal('servico', h.servico || '');
+      setVal('municipio', h.municipio || '');
+      var p = dados.paciente || {};
+      setVal('codigoProcedimento', p.codigoProcedimento || gerarCodigoProcedimento());
+      setVal('iniciais', p.iniciais || '');
+      setVal('faixa', p.faixa || '');
+      setVal('sexo', p.sexo || '');
+      setVal('peso', p.peso || '');
+      setVal('prontuario', p.pront || '');
+      setVal('origem', p.origem || '');
+      var r = dados.responsavel || {};
+      setVal('respNome', r.nome || '');
+      setVal('respCargo', r.cargo || '');
+      setVal('respCRM', r.crm || '');
+      setVal('respData', r.data || '');
+      setVal('respHora', r.hora || '');
+      var dec = document.getElementById('respDeclaracao');
+      if(dec) dec.checked = !!(r.declaracao);
+      if(dados.historico && Array.isArray(dados.historico)){
+        historico = dados.historico.slice();
+        renderizarHistorico();
+      }
+      var key = dados.diagnostico || '';
+      if(key && DOENCAS[key]){
+        document.getElementById('diagnostico').value = key;
+        document.getElementById('diagnostico').dispatchEvent(new Event('change'));
+        var exames = dados.exames || [];
+        exames.forEach(function(ex, i){
+          if(!ex) return;
+          var radioSim = document.querySelector('input[name="ex_'+i+'"][value="Sim"]');
+          var radioNao = document.querySelector('input[name="ex_'+i+'"][value="Não"]');
+          if(ex.status === 'Sim' && radioSim){ radioSim.checked = true; }
+          else if(ex.status === 'Não' && radioNao){ radioNao.checked = true; }
+          atualizarResultado(i);
+          setVal('res_'+i, ex.resultado || '');
+          setVal('data_'+i, ex.data || '');
+          setVal('obs_'+i, ex.observacao || '');
+        });
+        atualizarContador();
+      }
+      setVal('indicacao', dados.indicacao || '');
+
+      var resumo = dados.resumoLegivel || gerarResumo();
+      var box = document.getElementById('resumoImportado');
+      box.textContent = resumo;
+      box.style.display = 'block';
+
+      if(dados.estado === 'finalizado'){
+        setEstado('finalizado');
+        travarFormulario();
+        if(dados.respostaAFE404){
+          var boxAfe = document.getElementById('textoAFE404');
+          boxAfe.textContent = dados.respostaAFE404;
+          boxAfe.style.display = 'block';
+          document.getElementById('btnCopiarAFE404').disabled = false;
+        }
+        alert('Solicitação importada em modo somente leitura (versão finalizada). O documento está bloqueado para edição.');
+      } else {
+        setEstado('importado');
+        alert('Solicitação importada com sucesso. A seção 8 (AFE-404) foi liberada para a análise da Hemominas. Confira o resumo legível antes de gerar o formulário.');
+      }
+    } catch(err){
+      alert('Não foi possível importar o arquivo. Verifique se é um arquivo de solicitação válido (.json).');
+    }
+  };
+  reader.readAsText(file);
+  event.target.value = '';
+}
+
+// ===== TEXTO CONSOLIDADO (SOLICITAÇÃO) =====
+function gerarTexto(){
+  if(estado === 'finalizado'){ alert('Documento finalizado. Não é possível gerar novos textos.'); return; }
+  var key = document.getElementById('diagnostico').value;
+  if(!key){ alert('Selecione um diagnóstico.'); return; }
+  var d = DOENCAS[key];
+  var h = pegarHospital(), p = pegarPaciente(), r = pegarResponsavel();
+  var indicacao = document.getElementById('indicacao').value.trim();
+  var examesSim = pegarExamesSim();
+  var aut = calcularAutorizacao();
+  if(aut.pre === 0){ alert('Marque ao menos um critério como "Sim" para gerar o texto.'); return; }
+  if(!validarResponsavel()) return;
+
+  var t = '';
+  t += 'Solicitação de Plasmaférese Terapêutica (TPE) para doença rara. ';
+  t += 'Código do procedimento: '+(p.codigoProcedimento||'[não gerado]')+'. ';
+  t += 'Hospital solicitante: '+(h.servico||'[serviço]')+(h.cnes?', CNES '+h.cnes:'')+(h.municipio?', '+h.municipio:'')+'. ';
+  t += 'Paciente anonimizado: '+(p.iniciais||'[iniciais]')+(p.faixa?', faixa etária '+p.faixa:'')+(p.sexo?', sexo '+p.sexo:'')+(p.peso?', peso '+p.peso+' kg':'')+(p.origem?', município de origem '+p.origem:'')+'. ';
+  t += 'Diagnóstico: '+d.nome+' (CID '+d.cid+'), indicação '+d.indicacao+'. ';
+  t += 'Caracterização da patologia: '+aut.pre+' de '+aut.total+' critérios preenchidos ('+aut.percentual+'%). Nível de autorização: '+aut.rotulo+'. ';
+  t += 'Exames comprobatórios realizados: '+(examesSim.map(function(e){ var s=e.nome; if(e.data)s+=' (realizado em '+fmtData(e.data)+')'; if(e.resultado)s+=' — resultado: '+e.resultado; if(e.observacao)s+=' — observação: '+e.observacao; return s; }).join('; '))+'. ';
+  if(indicacao) t += 'Indicação clínica: '+indicacao+'. ';
+  t += 'Grau de evidência ASFA: Categoria '+d.categoria+', Grade '+d.grade+'. ';
+  t += 'Número de sessões recomendado pelo protocolo: '+d.numSessoes+'. ';
+  t += 'Solução de reposição: '+d.solucao+'. ';
+  t += 'Número máximo de procedimentos permitidos por solicitação: 6 (seis), conforme Resolução SES/MG 11.011/2026. ';
+  t += 'Os exames comprobatórios deverão ser encaminhados anexados à Fundação Hemominas (plasmaferese@hemominas.mg.gov.br). ';
+  t += 'Responsável pelo preenchimento: '+(r.nome||'[nome]')+(r.cargo?', '+r.cargo:'')+(r.crm?', '+r.crm:'')+(r.data?', em '+fmtData(r.data):'')+(r.hora?', às '+r.hora:'')+'. ';
+  t += 'Declaração de responsabilidade confirmada. ';
+  t += 'Indicação sujeita à confirmação do analista da Fundação Hemominas.';
+
+  var box = document.getElementById('textoConsolidado');
+  box.textContent = t;
+  box.style.display = 'block';
+  document.getElementById('btnCopiar').disabled = false;
+  abrirModal(d);
+}
+
+// ===== MONTAR TEXTO AFE-404 =====
+function montarTextoAFE404(){
+  var key = document.getElementById('diagnostico').value;
+  var d = DOENCAS[key];
+  var h = pegarHospital(), p = pegarPaciente(), r = pegarResponsavel();
+  var examesSim = pegarExamesSim();
+  var aut = calcularAutorizacao();
+
+  var numProc = document.getElementById('numProcesso').value.trim() || '[NÚMERO DO PROCESSO]';
+  var dataA = fmtData(document.getElementById('dataAnalise').value) || new Date().toLocaleDateString('pt-BR');
+  var dataAss = fmtData(document.getElementById('dataAssinatura').value) || new Date().toLocaleDateString('pt-BR');
+  var episodios = document.getElementById('episodiosPrev').value.trim() || '6';
+
+  var cTrat = (document.querySelector('input[name="cTrat"]:checked')||{}).value || 'Sim';
+  var cGrav = (document.querySelector('input[name="cGrav"]:checked')||{}).value || 'Sim';
+  var cTCLE = (document.querySelector('input[name="cTCLE"]:checked')||{}).value || 'Sim';
+  var obsTrat = document.getElementById('obsTrat').value.trim();
+  var obsGrav = document.getElementById('obsGrav').value.trim();
+
+  var decisao = (document.querySelector('input[name="decisao"]:checked')||{}).value || 'APROVADO';
+  var sessoes = document.getElementById('sessoesAut').value.trim() || '6';
+  var motivo = document.getElementById('motivoDec').value.trim();
+
+  var analistaNome = document.getElementById('analistaNome').value.trim() || '[NOME DO ANALISTA]';
+  var analistaCargo = document.getElementById('analistaCargo').value.trim() || '[CARGO/ID]';
+
+  var linhas = [];
+  linhas.push('FUNDAÇÃO HEMOMINAS');
+  linhas.push('FORMULÁRIO FPTO-T.AHH.AFE-404 — ANÁLISE DA FUNDAÇÃO HEMOMINAS');
+  linhas.push('Plasmaférese Terapêutica (TPE) para Doenças Raras');
+  linhas.push('');
+  linhas.push('Código do Procedimento: ' + (p.codigoProcedimento||'[não gerado]'));
+  linhas.push('Data da Análise: ' + dataA);
+  linhas.push('Número do Processo: ' + numProc);
+  linhas.push('');
+  linhas.push('1. DADOS DO PACIENTE E SOLICITAÇÃO');
+  linhas.push('Paciente (dados anonimizados): ' + (p.iniciais||'[iniciais]') + (p.faixa?', faixa etária '+p.faixa:'') + (p.sexo?', sexo '+p.sexo:'') + (p.peso?', peso '+p.peso+' kg':'') + (p.pront?', prontuário '+p.pront:'') + (p.origem?', município de origem '+p.origem:''));
+  linhas.push('Serviço Solicitante: ' + (h.servico||'[serviço]') + (h.cnes?', CNES '+h.cnes:'') + (h.municipio?', '+h.municipio:''));
+  linhas.push('Diagnóstico Principal (ASFA): ' + d.nome + ' — ' + d.indicacao + ' | CID ' + d.cid + ' | Categoria ' + d.categoria + ' | Grade ' + d.grade);
+  linhas.push('Responsável pelo preenchimento da solicitação: ' + (r.nome||'[nome]') + (r.cargo?', '+r.cargo:'') + (r.crm?', '+r.crm:'') + (r.data?', em '+fmtData(r.data):'') + (r.hora?', às '+r.hora:'') + ' | Declaração: ' + (r.declaracao ? 'CONFIRMADA' : 'NÃO CONFIRMADA'));
+  linhas.push('');
+  linhas.push('2. CARACTERIZAÇÃO DA PATOLOGIA E NÍVEL DE AUTORIZAÇÃO');
+  linhas.push('Critérios preenchidos (Sim): ' + aut.pre + ' de ' + aut.total + ' (' + aut.percentual + '%) | Não preenchidos: ' + (aut.total - aut.pre));
+  linhas.push('Nível de autorização indicado: ' + aut.rotulo);
+  linhas.push(marcar('Sim') + ' Diagnóstico comprovado por exames anexados (conforme protocolo) — SIM');
+  linhas.push('      Exames: ' + examesSim.map(function(e){ var s=e.nome; if(e.data)s+=' (realizado em '+fmtData(e.data)+')'; if(e.resultado)s+=' — resultado: '+e.resultado; if(e.observacao)s+=' — observação: '+e.observacao; return s; }).join('; '));
+  linhas.push(marcar('Sim') + ' Indicação ASFA (Categoria I ou II) conforme protocolo vigente — SIM (Categoria ' + d.categoria + ', Grade ' + d.grade + ')');
+  linhas.push(marcar(cTrat) + ' Tratamento prévio ou concomitante adequado (se aplicável) — ' + cTrat.toUpperCase());
+  if(obsTrat) linhas.push('      Observações: ' + obsTrat);
+  linhas.push(marcar(cGrav) + ' Gravidade da condição documentada (urgência, falha terapêutica, risco de vida/sequela) — ' + cGrav.toUpperCase());
+  if(obsGrav) linhas.push('      Observações: ' + obsGrav);
+  linhas.push(marcar('Sim') + ' Plano de TPE (Nº sessões, TPV 1.0-1.5, solução de reposição) adequado e justificado — SIM (' + d.numSessoes + ' sessões | TPV 1.0-1.5 | Reposição: ' + d.solucao + ')');
+  linhas.push(marcar(cTCLE) + ' TCLE (Termo de Consentimento Livre e Esclarecido) assinado e anexado — ' + cTCLE.toUpperCase());
+  linhas.push(marcar('Sim') + ' Conformidade com a LGPD (dados tratados conforme consentimento) — SIM (dados anonimizados)');
+  linhas.push('');
+  linhas.push('3. INDICAÇÃO ELETRÔNICA PRÉVIA');
+  linhas.push('Foi dada indicação eletrônica prévia de ' + episodios + ' episódios, conforme o caso, sujeita a reavaliação pelos analistas da Fundação Hemominas.');
+  linhas.push('Recomenda-se aguardar o retorno definitivo da análise. Em caso de gravidade e/ou certeza diagnóstica, o início do procedimento poderá ocorrer por decisão do próprio serviço, com posterior encaminhamento da justificativa à Fundação Hemominas para autorização a posteriori (Resolução SES/MG 11.011/2026, Art. 8º, §3º).');
+  linhas.push('');
+  linhas.push('4. ENCAMINHAMENTO DOS EXAMES');
+  linhas.push('Os exames comprobatórios da patologia deverão ser encaminhados anexados à Fundação Hemominas (plasmaferese@hemominas.mg.gov.br), com assunto "Solicitação TPE - [iniciais do paciente]", para análise e decisão definitiva.');
+  linhas.push('');
+  linhas.push('5. DECISÃO DA FUNDAÇÃO HEMOMINAS');
+  linhas.push(marcar(decisao==='APROVADO'?'Sim':'Não') + ' APROVADO' + (decisao==='APROVADO' ? ' — Nº de Sessões Autorizadas: ' + sessoes : ''));
+  linhas.push(marcar(decisao==='DEVOLVER'?'Sim':'Não') + ' DEVOLVER / SOLICITAR MAIS INFORMAÇÕES' + (decisao==='DEVOLVER' && motivo ? ' — ' + motivo : ''));
+  linhas.push(marcar(decisao==='INDEFERIDO'?'Sim':'Não') + ' INDEFERIDO' + (decisao==='INDEFERIDO' && motivo ? ' — Motivo: ' + motivo : ''));
+  linhas.push('');
+  linhas.push('6. ASSINATURA DO ANALISTA');
+  linhas.push('Nome: ' + analistaNome + ' | Cargo/ID: ' + analistaCargo + ' | Data: ' + dataAss);
+  linhas.push('');
+  linhas.push('Documento gerado eletronicamente — indicação prévia sujeita à conferência e assinatura do analista responsável da Fundação Hemominas.');
+
+  return linhas.join('\n');
+}
+
+// ===== GERAR AFE-404 (SEM TRAVAR) =====
+function gerarAFE404(){
+  if(perfilAtual !== 'analista'){ alert('A análise (Seção 8) é exclusiva do perfil Analista da Hemominas.'); return; }
+  if(estado === 'finalizado'){ alert('Documento finalizado. Não é possível editar.'); return; }
+  var key = document.getElementById('diagnostico').value;
+  if(!key){ alert('Selecione o diagnóstico na seção 3.'); return; }
+  var aut = calcularAutorizacao();
+  if(aut.pre === 0){ alert('Marque ao menos um critério como "Sim" para gerar o AFE-404.'); return; }
+
+  var texto = montarTextoAFE404();
+  var box = document.getElementById('textoAFE404');
+  box.textContent = texto;
+  box.style.display = 'block';
+  document.getElementById('btnCopiarAFE404').disabled = false;
+  setSeloStatus('editado', 'Analisado');
+}
+
+// ===== ACOMPANHAMENTO (localStorage) =====
+function lerAcompanhamento(){
+  try {
+    var raw = localStorage.getItem(CHAVE_ACOMP);
+    return raw ? JSON.parse(raw) : [];
+  } catch(e){ return []; }
+}
+function salvarAcompanhamento(lista){
+  try { localStorage.setItem(CHAVE_ACOMP, JSON.stringify(lista)); } catch(e){}
+}
+function registrarAcompanhamento(){
+  var key = document.getElementById('diagnostico').value;
+  var d = DOENCAS[key];
+  var h = pegarHospital(), p = pegarPaciente();
+  var decisao = (document.querySelector('input[name="decisao"]:checked')||{}).value || 'APROVADO';
+  var sessoes = document.getElementById('sessoesAut').value.trim() || '6';
+  var dataA = document.getElementById('dataAnalise').value || new Date().toISOString().slice(0,10);
+  var analista = document.getElementById('analistaNome').value.trim();
+
+  var registro = {
+    iniciais: p.iniciais || '',
+    codigo: p.codigoProcedimento || gerarCodigoProcedimento(),
+    diagnostico: d ? d.nome : '',
+    politica: 'PTO-T.AHH.AFE-24',
+    procedimento: 'Plasmaférese Terapêutica (TPE)',
+    dataAutorizacao: fmtData(dataA),
+    sessoesValidadas: sessoes,
+    sessoesEfetuadas: '',
+    diferenca: '',
+    dataPrimeiraSessao: '',
+    dataUltimaSessao: '',
+    estabelecimento: h.servico || '',
+    cnes: h.cnes || '',
+    municipio: h.municipio || '',
+    decisao: decisao,
+    analista: analista,
+    registradoEm: new Date().toISOString()
+  };
+
+  var lista = lerAcompanhamento();
+  var jaExiste = lista.some(function(r){ return r.codigo === registro.codigo; });
+  if(!jaExiste) lista.push(registro);
+  salvarAcompanhamento(lista);
+  atualizarContadorAcomp();
+  return registro;
+}
+function atualizarContadorAcomp(){
+  var el = document.getElementById('contadorAcomp');
+  if(!el) return;
+  var n = lerAcompanhamento().length;
+  el.textContent = n > 0 ? 'Acompanhamento: ' + n + ' solicitação(ões) finalizada(s) registrada(s) neste navegador.' : '';
+}
+function escCSV(v){
+  v = (v === undefined || v === null) ? '' : String(v);
+  if(v.indexOf(';') !== -1 || v.indexOf('"') !== -1 || v.indexOf('\n') !== -1){
+    v = '"' + v.replace(/"/g, '""') + '"';
+  }
+  return v;
+}
+function exportarAcompanhamento(){
+  var lista = lerAcompanhamento();
+  if(lista.length === 0){
+    alert('Nenhuma solicitação finalizada registrada ainda. Finalize ao menos uma resposta para gerar o acompanhamento.');
+    return;
+  }
+  var cabecalho = [
+    'Iniciais do Paciente','Código','Diagnóstico','Política Vinculada','Procedimento Autorizado',
+    'Data da Autorização','Sessões Validadas','Sessões Efetuadas','Diferença de Sessões',
+    'Data da Primeira Sessão','Data da Última Sessão','Estabelecimento de Saúde','CNES do EAS','Município Executor'
+  ];
+  var linhas = [cabecalho.map(escCSV).join(';')];
+  lista.forEach(function(r){
+    linhas.push([
+      r.iniciais, r.codigo, r.diagnostico, r.politica, r.procedimento,
+      r.dataAutorizacao, r.sessoesValidadas, r.sessoesEfetuadas, r.diferenca,
+      r.dataPrimeiraSessao, r.dataUltimaSessao, r.estabelecimento, r.cnes, r.municipio
+    ].map(escCSV).join(';'));
+  });
+  var conteudo = '\uFEFF' + linhas.join('\r\n');
+  var blob = new Blob([conteudo], {type:'text/csv;charset=utf-8;'});
+  var a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'acompanhamento_tpe_' + new Date().toISOString().slice(0,10) + '.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(a.href);
+  alert('Acompanhamento exportado com ' + lista.length + ' registro(s). Abra o arquivo no Excel e cole na planilha de acompanhamento.');
+}
+
+// ===== FINALIZAR E EXPORTAR RESPOSTA (TRAVA) =====
+function finalizarResposta(){
+  if(perfilAtual !== 'analista'){ alert('A finalização da resposta é exclusiva do perfil Analista da Hemominas.'); return; }
+  if(estado === 'finalizado'){ alert('Documento já finalizado.'); return; }
+  var key = document.getElementById('diagnostico').value;
+  if(!key){ alert('Selecione o diagnóstico na seção 3.'); return; }
+  var aut = calcularAutorizacao();
+  if(aut.pre === 0){ alert('Marque ao menos um critério como "Sim".'); return; }
+  var analistaNome = document.getElementById('analistaNome').value.trim();
+  if(!analistaNome){ alert('Informe o nome do analista (Assinatura do Analista) para finalizar a resposta.'); return; }
+
+  var decisao = (document.querySelector('input[name="decisao"]:checked')||{}).value || 'APROVADO';
+  var texto = montarTextoAFE404();
+
+  var box = document.getElementById('textoAFE404');
+  box.textContent = texto;
+  box.style.display = 'block';
+  document.getElementById('btnCopiarAFE404').disabled = false;
+
+  registrarHistorico('Finalização da resposta pelo analista (' + decisao + ') — documento bloqueado para edição', 'analista');
+  setEstado('finalizado');
+  travarFormulario();
+
+  registrarAcompanhamento();
+
+  baixarJSON(montarDados('finalizado', texto));
+  alert('Resposta finalizada e exportada (código ' + document.getElementById('codigoProcedimento').value + '). O documento está bloqueado para edição. O caso foi registrado no acompanhamento — use "Exportar acompanhamento (.csv)" para gerar a linha da planilha.');
+}
+
+// ===== NOVA SOLICITAÇÃO =====
+function confirmarNovaSolicitacao(){
+  if(confirm('Iniciar uma nova solicitação? Os dados atuais serão apagados.')){
+    limparForm();
+  }
+}
+
+// ===== COPIAR =====
+function copiarTexto(){ copiarArea('textoConsolidado'); }
+function copiarAFE404(){ copiarArea('textoAFE404'); }
+function copiarArea(id){
+  var box = document.getElementById(id);
+  var texto = box.textContent;
+  if(navigator.clipboard && navigator.clipboard.writeText){
+    navigator.clipboard.writeText(texto).then(function(){ alert('Conteúdo copiado para a área de transferência.'); });
+  } else {
+    var ta = document.createElement('textarea');
+    ta.value = texto; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); document.body.removeChild(ta);
+    alert('Conteúdo copiado para a área de transferência.');
+  }
+}
+
+// ===== MODAL =====
+function abrirModal(d){
+  var aut = calcularAutorizacao();
+  var corStatus = aut.status === 'liberacao' ? '#1e7e5a' : (aut.status === 'condicional' ? '#b26a00' : '#c0392b');
+  var html = '<p><strong>'+d.nome+'</strong> — '+d.indicacao+'</p>';
+  html += '<table><tr><th>Categoria ASFA</th><td><span class="badge '+(d.categoria==='I'?'catI':'catII')+'">'+d.categoria+'</span> '+(d.categoria==='I'?'Primeira linha (isolado ou junto do tratamento padrão)':'Segunda linha (adjuvante/alternativa quando a primeira linha falha)')+'</td></tr>';
+  html += '<tr><th>Grade</th><td>'+d.grade+' — '+(d.grade.charAt(0)==='1'?'Recomendação forte':'Recomendação condicional/fraca')+' ('+(d.grade.charAt(1)==='A'?'melhor qualidade':d.grade.charAt(1)==='B'?'qualidade moderada':'menor qualidade')+')</td></tr>';
+  html += '<tr><th>Sessões recomendadas</th><td>'+d.numSessoes+'</td></tr>';
+  html += '<tr><th>Solução de reposição</th><td>'+d.solucao+'</td></tr>';
+  html += '<tr><th>Máx. procedimentos/solicitação</th><td><strong>6</strong> (Resolução SES/MG 11.011/2026)</td></tr>';
+  html += '<tr><th>Nível de autorização</th><td><strong style="color:'+corStatus+';">'+aut.rotulo+'</strong> — '+aut.pre+' de '+aut.total+' critérios ('+aut.percentual+'%)</td></tr></table>';
+  html += '<p class="aviso" style="margin-top:10px;"><strong>Indicação prévia</strong> — sujeita à confirmação do analista da Fundação Hemominas (FPTO-T.AHH.AFE-404).</p>';
+  document.getElementById('modalConteudo').innerHTML = html;
+  document.getElementById('modal').classList.add('show');
+}
+function fecharModal(){ document.getElementById('modal').classList.remove('show'); }
+
+// ===== LIMPAR =====
+function limparForm(){
+  destravarFormulario();
+  document.getElementById('cnes').value='';
+  document.getElementById('servico').value='';
+  document.getElementById('municipio').value='';
+  document.getElementById('codigoProcedimento').value='';
+  document.getElementById('iniciais').value='';
+  document.getElementById('faixa').value='';
+  document.getElementById('sexo').value='';
+  document.getElementById('peso').value='';
+  document.getElementById('prontuario').value='';
+  document.getElementById('origem').value='';
+  document.getElementById('diagnostico').value='';
+  document.getElementById('indicacao').value='';
+  document.getElementById('respNome').value='';
+  document.getElementById('respCargo').value='';
+  document.getElementById('respCRM').value='';
+  document.getElementById('respData').value='';
+  document.getElementById('respHora').value='';
+  document.getElementById('respDeclaracao').checked=false;
+  historico = [];
+  renderizarHistorico();
+  document.getElementById('checklist').innerHTML='<p class="aviso">Selecione um diagnóstico para exibir os exames exigidos pelo protocolo.</p>';
+  document.getElementById('painelCriterios').style.display='none';
+  document.getElementById('alertaCriterios').style.display='none';
+  document.getElementById('textoConsolidado').style.display='none';
+  document.getElementById('btnCopiar').disabled=true;
+  document.getElementById('textoAFE404').style.display='none';
+  document.getElementById('btnCopiarAFE404').disabled=true;
+  document.getElementById('resumoImportado').style.display='none';
+  document.getElementById('numProcesso').value='';
+  document.getElementById('episodiosPrev').value='6';
+  document.getElementById('obsTrat').value='';
+  document.getElementById('obsGrav').value='';
+  document.getElementById('motivoDec').value='';
+  document.getElementById('analistaNome').value='';
+  document.getElementById('analistaCargo').value='';
+  document.querySelector('input[name="decisao"][value="APROVADO"]').checked=true;
+  document.getElementById('sessoesAut').value='6';
+  setEstado('original');
+}
+
+// ===== DATA PADRÃO =====
+(function(){
+  var hoje = new Date();
+  document.getElementById('dataAnalise').valueAsDate = hoje;
+  document.getElementById('dataAssinatura').valueAsDate = hoje;
+  document.getElementById('respData').valueAsDate = hoje;
+  document.getElementById('respHora').value = hoje.toTimeString().slice(0,5);
+  atualizarContadorAcomp();
+})();
+</script>
+</body>
+</html>
